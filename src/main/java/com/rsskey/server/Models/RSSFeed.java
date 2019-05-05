@@ -1,28 +1,33 @@
 package com.rsskey.server.Models;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RSSFeed {
+public class RSSFeed implements IModel<RSSFeed>{
 
-    final String title;
-    final String link;
-    final String description;
-    final String language;
-    final String copyright;
-    final String pubDate;
+    private  String title;
+    private  String link;
+    private  String description;
+    private  String language;
+    private  String copyright;
+    private  String pubDate;
+    private  Long ID;
 
-    public int getID() {
-        return ID;
+    public  List<RSSFeedItem> items = new ArrayList<RSSFeedItem>();
+
+    public RSSFeed()
+    {
+        this.title = null;
+        this.link = null;
+        this.description = null;
+        this.language = null;
+        this.copyright = null;
+        this.pubDate = null;
+        this.ID = null;
+
     }
-
-    public void setID(int ID) {
-        this.ID = ID;
-    }
-
-    private  int ID;
-
-    final List<RSSFeedItem> items = new ArrayList<RSSFeedItem>();
 
     public RSSFeed(String title, String link, String description, String language, String copyright, String pubDate) {
         this.title = title;
@@ -33,7 +38,7 @@ public class RSSFeed {
         this.pubDate = pubDate;
     }
 
-    public RSSFeed(String title, String link, String description, String language, String copyright, String pubDate, int ID) {
+    public RSSFeed(String title, String link, String description, String language, String copyright, String pubDate, Long ID) {
         this.title = title;
         this.link = link;
         this.description = description;
@@ -43,33 +48,30 @@ public class RSSFeed {
         this.ID = ID;
     }
 
-    public String getTitle() {
-        return title;
+    public Long getID() {
+        return ID;
     }
+    public void setID(Long ID) { this.ID = ID; }
 
-    public String getLink() {
-        return link;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title;}
 
-    public String getDescription() {
-        return description;
-    }
+    public String getLink() { return link; }
+    public void setLink(String link) { this.link = link;}
 
-    public String getLanguage() {
-        return language;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public String getCopyright() {
-        return copyright;
-    }
+    public String getLanguage() { return language; }
+    public void setLanguage(String language) { this.language = language; }
 
-    public String getPubDate() {
-        return pubDate;
-    }
+    public String getCopyright() { return copyright; }
+    public void setCopyright(String copyright) { this.copyright = copyright; }
 
-    public List<RSSFeedItem> getItems() {
-        return items;
-    }
+    public String getPubDate() { return pubDate; }
+    public void setPubDate(String pubDate) { this.pubDate = pubDate; }
+
+    public List<RSSFeedItem> getItems() {  return items;  }
 
     @Override
     public String toString() {
@@ -80,8 +82,11 @@ public class RSSFeed {
                 ", language='" + language + '\'' +
                 ", copyright='" + copyright + '\'' +
                 ", pubDate='" + pubDate + '\'' +
-                ", items=" + items +
                 '}';
     }
 
+    @Override
+    public RSSFeed map(ResultSet resultSet) throws SQLException {
+        return null;
+    }
 }

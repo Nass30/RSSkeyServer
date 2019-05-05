@@ -1,159 +1,112 @@
 package com.rsskey.server.Repository;
 
-import com.rsskey.server.DatabaseUtils.DbConnect;
+import com.rsskey.server.DAO.Exception.DAOException;
+import com.rsskey.server.DAO.Exception.DAOFactory;
 import com.rsskey.server.Models.RSSFeed;
 import com.rsskey.server.Models.User;
+import com.rsskey.server.Utils.SQLHelper;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
-public class UserRepository extends Repository<User>{
+public class UserRepository extends ARepository<User> {
 
-    public UserRepository(DbConnect dbconnection) {
-        super(dbconnection);
+    public UserRepository(DAOFactory dao) {
+        super(dao);
     }
 
-    public User add(User model) {
+    @Override
+    public User add(User model) throws DAOException {
         Boolean resultQuery = false;
-        User result = null;
+        User DBModel = null;
+        ArrayList<Long> result = null;
+        String query = "INSERT INTO public.users(\"Login\", \"Password\", \"Email\") VALUES (?, ?, ?)";
 
         try {
-            Statement state = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-
-            String query = "INSERT INTO public.users(\"Login\", \"Password\", \"Email\") VALUES (?, ?, ?)";
-            //On crée l'objet avec la requête en paramètre
-            PreparedStatement prepare = this.connect.prepareStatement(query);
-
-
-            /*for ( Map.Entry<Integer, Object> entry : params.entrySet() ) {
-                String key = entry.getKey();
-                Label value = entry.getValue();
-                prepare.
-            }*/
-
-            //On remplace le premier trou par le nom du professeur
-            prepare.setString(1, model.getLogin());
-            prepare.setString(2, model.getPassword());
-            prepare.setString(3, model.getEmail());
-
-            resultQuery = prepare.execute();
-            prepare.close();
-            state.close();
-
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, model.getLogin(), model.getPassword(), model.getEmail());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (resultQuery)
-                result = this.findbyLogin(model.getLogin());
+            if (result != null && result.size() > 0)
+                DBModel = this.findbyID(result.get(0));
         }
-        return result;
+        return DBModel;
     }
 
-    public Boolean delete(int ID) {
-        Boolean result = false;
+    @Override
+    public Boolean delete(Long ID) {
+        Boolean toreturn = false;
+        ArrayList<Long>  result = null;
+        String query = "DELETE FROM public.users WHERE \"LoginID\"=?";
 
         try {
-            Statement state = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-
-            String query = "DELETE FROM public.users WHERE \"LoginID\"=?";
-            //On crée l'objet avec la requête en paramètre
-            PreparedStatement prepare = this.connect.prepareStatement(query);
-
-            //On remplace le premier trou par le nom du professeur
-            prepare.setInt(1, ID);
-
-            result =  prepare.execute();
-            prepare.close();
-            state.close();
-
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, ID);
+            if (result != null && result.size() > 0)
+                toreturn = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+        return toreturn;
     }
 
-    public User findbyID(int ID) {
-        User findedModel = null;
+    @Override
+    public User findbyID(Long ID) {
+        User user = new User();
+        User newUser = null;
+        String query = "SELECT * FROM public.users WHERE \"LoginID\"=?";
 
         try {
-            Statement state = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-
-            String query = "SELECT * FROM public.users where \"loginID \"=?";
-            //On crée l'objet avec la requête en paramètre
-            PreparedStatement prepare = this.connect.prepareStatement(query);
-
-            prepare.setInt(1, ID);
-
-            ResultSet res =  prepare.executeQuery();
-            while(res.next()){
-                findedModel = new User(res.getString("Login"),res.getString("Email"),res.getString("Password"), res.getInt("LoginID"));
-            }
-
-            res.close();
-            prepare.close();
-            state.close();
-
+            newUser = (User)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, user ,ID);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return findedModel;
+        return newUser;
+    }
+
+    public User findByLoginPass(String login, String password) {
+        User user = new User();
+        User findedUser = null;
+        String query = "SELECT * FROM public.users WHERE \"Login\" = ? AND \"Password\" = ?";
+
+        try {
+            findedUser = (User)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, user ,login, password);
+            System.out.print(user.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return findedUser;
     }
 
     public User findbyLogin(String Login) {
-        User findedModel = null;
+        User user = new User();
+        User findedUser = null;
+        String query = "SELECT * FROM public.users where \"login \"=?";
 
         try {
-            Statement state = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-
-            String query = "SELECT * FROM public.users where \"login \"=?";
-            //On crée l'objet avec la requête en paramètre
-            PreparedStatement prepare = this.connect.prepareStatement(query);
-
-            prepare.setString(1, Login);
-
-            ResultSet res =  prepare.executeQuery();
-            while(res.next()){
-                findedModel = new User(res.getString("Login"),res.getString("Email"),res.getString("Password"), res.getInt("LoginID"));
-            }
-
-            res.close();
-            prepare.close();
-            state.close();
-
+            findedUser = (User)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, user ,Login);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return findedModel;
+        return findedUser;
     }
 
+    @Override
     public User update(User model) {
+        ArrayList<Long> result = null;
         User updatedModel = null;
+        String query = "UPDATE public.users SET \"Login\"=?, \"Password\"=?, \"Email\"=? WHERE \"LoginID\"=?";
 
         try {
-            Statement state = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-
-            String query = "UPDATE public.users SET \"Login\"=?, \"Password\"=?, \"Email\"=? WHERE \"LoginID\"=?";
-            //On crée l'objet avec la requête en paramètre
-            PreparedStatement prepare = this.connect.prepareStatement(query);
-
-            prepare.setString(1, model.getLogin());
-            prepare.setString(2, model.getPassword());
-            prepare.setString(3, model.getEmail());
-
-            ResultSet res =  prepare.executeQuery();
-            while(res.next()){
-                updatedModel = new User(res.getString("Login"),res.getString("Email"),res.getString("Password"), res.getInt("LoginID"));
-            }
-
-            res.close();
-            prepare.close();
-            state.close();
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false, model.getLogin(), model.getPassword(), model.getEmail(), model.getID());
 
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            if (result != null && result.size() > 0)
+                updatedModel = this.findbyID(result.get(0));
         }
         return updatedModel;
     }
