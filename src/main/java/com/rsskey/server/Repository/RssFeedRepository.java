@@ -13,9 +13,9 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.*;
 
-public class RssFeedARepository extends ARepository<RSSFeed> {
+public class RssFeedRepository extends ARepository<RSSFeed> {
 
-    public RssFeedARepository(DAOFactory dao) {
+    public RssFeedRepository(DAOFactory dao) {
         super(dao);
     }
 
