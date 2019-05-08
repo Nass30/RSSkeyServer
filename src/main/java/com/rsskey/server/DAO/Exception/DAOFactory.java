@@ -61,7 +61,7 @@ public class DAOFactory {
             throw new DAOConfigurationException( "Le driver est introuvable dans le classpath.", e );
         }*/
 
-        DAOFactory instance = new DAOFactory( "jdbc:postgresql://localhost:5432/JavaServer", "postgres", "azerty123" );
+        DAOFactory instance = new DAOFactory( "jdbc:postgresql://ec2-23-23-195-205.compute-1.amazonaws.com:5432/dlpb4374hpjs6", "buthoxyboesyxm", "314f4b7b014979cdc87b25945df38af7c50c4f43ade2bb8feb1af68b5f28aa18" );
         return instance;
     }
 
