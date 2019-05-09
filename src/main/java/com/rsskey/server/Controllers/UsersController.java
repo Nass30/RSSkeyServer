@@ -3,7 +3,11 @@ package com.rsskey.server.Controllers;
 import com.rsskey.server.DAO.Exception.DAOFactory;
 import com.rsskey.server.Models.User;
 import com.rsskey.server.Repository.UserRepository;
+import com.rsskey.server.Utils.TokenAuth;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -12,16 +16,30 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping(path="/users")
 public class UsersController {
 
-    @GetMapping(value="/authentification")
+    @RequestMapping(value="/authentification", method = GET)
     public String authentification(@RequestParam(value="username") String name ,@RequestParam(value="password") String password)
     {
         UserRepository repo =  DAOFactory.getInstance().getUserRepository();
         String token = null;
+        String jwtId = "SOMEID1234";
+        String jwtIssuer = "JWT Demo";
+        String jwtSubject = "Andrew";
+        int jwtTimeToLive = 800000;
+        User u = repo.findByLoginPass(name,password);
 
-        if(repo.findByLoginPass(name,password) != null){
-            token = "TUPEUXPASSER";
+        if(u != null){
+            token = TokenAuth.createJWT(u.getID().toString(),u.getLogin(),"test", jwtTimeToLive);
+            try
+            {
+                TokenAuth.decodeJWT(token);
+                System.out.println("TOKEN VALIDER!");
+            } catch (Exception e) {
+                System.out.println("TOKEN NON VALIDER!");
+            }
+
+            //request.getSession().setAttribute("token", token);
         } else
-            token = "NAPASMARCHER";
+            token = "FUCK YOU DON'T TRY TO HACK US !!";
         return token;
     }
 

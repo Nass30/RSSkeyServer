@@ -111,7 +111,7 @@ public class SQLHelper {
      */
     public static PreparedStatement initialisationRequetePreparee( Connection connexion, String sql, boolean returnGeneratedKeys, Object... objets ) throws SQLException {
         System.out.print("passe par la !" + objets.length);
-        PreparedStatement preparedStatement = connexion.prepareStatement( sql );
+        PreparedStatement preparedStatement = connexion.prepareStatement( sql, returnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS );
         for ( int i = 0; i < objets.length; i++ ) {
             preparedStatement.setObject( i + 1, objets[i] );
         }
