@@ -11,7 +11,10 @@ public class User implements IModel<User> {
     private String login;
     private String password;
     private String email;
+
+    private String token;
     private ArrayList<RSSFeed> RssFeed = new ArrayList<>();
+
 
     public User(){
         this.login = null;
@@ -33,6 +36,9 @@ public class User implements IModel<User> {
         this.password = password;
         this.ID = ID;
     }
+
+    public String getToken() { return token; }
+    public void setToken(String token) { this.token = token; }
 
     public Long getID() {
         return ID;
@@ -84,6 +90,9 @@ public class User implements IModel<User> {
         this.setEmail( resultSet.getString( "Email" ) );
         this.setPassword( resultSet.getString( "Password" ) );
         this.setLogin( resultSet.getString( "Login" ) );
+        String token = resultSet.getString( "token" );
+        if (!resultSet.wasNull())
+            this.setToken(token);
         this.setRssFeed(new ArrayList<RSSFeed>());
         return this;
     }

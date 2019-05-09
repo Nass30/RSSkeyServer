@@ -3,6 +3,8 @@ package com.rsskey.server.Utils;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
+
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.jsonwebtoken.*;
 import java.util.Date;
 import io.jsonwebtoken.Jwts;
@@ -49,12 +51,24 @@ public class TokenAuth {
         return builder.compact();
     }
 
-    public static Claims decodeJWT(String jwt) {
+    public static boolean TokenIsValid(String token) {
+        Boolean isValid = true;
+
+        try {
+            decodeJWT(token);
+
+        } catch (Exception e) {
+               isValid = false;
+        }
+        return isValid;
+    }
+
+    public static Claims decodeJWT(String token) {
 
         //This line will throw an exception if it is not a signed JWS (as expected)
         Claims claims = Jwts.parser()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(SECRET_KEY))
-                .parseClaimsJws(jwt).getBody();
+                .parseClaimsJws(token).getBody();
         return claims;
     }
 

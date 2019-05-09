@@ -25,12 +25,19 @@ public class UsersController {
     {
         UserRepository repo =  DAOFactory.getInstance().getUserRepository();
         User user = null;
+        String token = null;
 
-        if((user = repo.findByLoginPass(name,password)) != null)
-            return new ResponseEntity(new AuthorizationToken(TokenAuth.createJWT(user.getID().toString(),user.getLogin(),user.getEmail(),80000000 )),
+        if ((user = repo.findByLoginPass(name,password)) != null) {
+            token = TokenAuth.createJWT(user.getID().toString(),user.getLogin(),user.getEmail(),80000000 );
+            user.setToken(token);
+
+            repo.update(user);
+            return new ResponseEntity(new AuthorizationToken(token),
                     HttpStatus.OK);
-        else
+        }
+        else {
             return new ResponseEntity(new APIError(HttpStatus.UNAUTHORIZED, "Wrong email - password"), HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @RequestMapping(value="/updatepassword/{id}", method = PUT)

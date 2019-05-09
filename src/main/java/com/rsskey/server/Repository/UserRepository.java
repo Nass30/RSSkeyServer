@@ -81,6 +81,21 @@ public class UserRepository extends ARepository<User> {
         return findedUser;
     }
 
+
+    public User findByToken(String token) {
+        User user = new User();
+        User findedUser = null;
+        String query = "SELECT * FROM public.users WHERE \"Token\" = ?";
+
+        try {
+            findedUser = (User)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, user , token);
+            System.out.print(user.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return findedUser;
+    }
+
     public User findbyLogin(String Login) {
         User user = new User();
         User findedUser = null;
