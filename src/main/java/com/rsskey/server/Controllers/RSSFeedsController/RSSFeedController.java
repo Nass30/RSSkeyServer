@@ -172,7 +172,7 @@ public class RSSFeedController {
         if (repo.findbyID(rssFeed.getID()) == null) {
             return new ResponseEntity(new APIError(HttpStatus.BAD_REQUEST, "Unknown RssFeed Id "+ rssFeed.getID()), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity(new Category("Tech", new ArrayList(), new Long(42)), HttpStatus.OK);
+        return ResponseEntity.ok(null);
     }
 
     @RequestMapping(value = "/favorites/delete/{id}", method = RequestMethod.DELETE)
