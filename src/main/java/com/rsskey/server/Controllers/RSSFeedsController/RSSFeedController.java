@@ -52,6 +52,7 @@ public class RSSFeedController {
         try {
             RSSFeedParser rssFeedParser = new RSSFeedParser(url.url);
             RSSFeed rssFeed = rssFeedParser.readFeed();
+            DAOFactory.getInstance().getRssFeedRepository().add(rssFeed);
             return new ResponseEntity<>(rssFeed, HttpStatus.OK);
         }
         catch(Exception e) {
