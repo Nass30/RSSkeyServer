@@ -85,6 +85,30 @@ public class SQLHelper {
         return ids;
     }
 
+    public static ArrayList<Object> executeQuery(Connection connexion, String sql, IModel model, Object... objets )
+    {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<Object> DBModel = new ArrayList<>();
+
+        try {
+
+            preparedStatement = initialisationRequetePreparee( connexion, sql, false, objets );
+            resultSet = preparedStatement.executeQuery();
+            /* Parcours de la ligne de données de l'éventuel ResulSet retourné */
+            while ( resultSet.next() ) {
+                DBModel.add(model.map( resultSet ));
+                System.out.print("TEST SQL EXECUTION !!");
+                System.out.print(model.toString());
+            }
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            closeCleanning( resultSet, preparedStatement, connexion );
+        }
+        return DBModel;
+    }
+
     public static Object executeQuery(Connection connexion, String sql, boolean returnGeneratedKeys, IModel model, Object... objets )
     {
         PreparedStatement preparedStatement = null;

@@ -20,6 +20,17 @@ import java.lang.Long;
 @RequestMapping(path="/feeds")
 public class RSSFeedController {
 
+    @RequestMapping(value="/user", method = RequestMethod.GET)
+    public ResponseEntity getAllFeedsUser(@RequestHeader("token") String token) {
+        User user = TokenAuth.getUserByToken(token);
+        List array = null;
+        if (user == null) {
+            return APIError.unauthorizedResponse();
+        }
+        array = DAOFactory.getInstance().getRssFeedRepository().getRSSFeed(user.getID());
+        return new ResponseEntity(array, HttpStatus.OK);
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity getAllFeeds(@RequestHeader("token") String token) {
         User user = TokenAuth.getUserByToken(token);
@@ -32,7 +43,7 @@ public class RSSFeedController {
         return new ResponseEntity(array, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @RequestMapping(value = "/user/add", method = RequestMethod.POST)
     public ResponseEntity putFeed(@RequestBody RSSFeedPutRequestBody url, @RequestHeader("token") String token) {
         User user = TokenAuth.getUserByToken(token);
         if (user == null) {

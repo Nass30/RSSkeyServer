@@ -2,46 +2,35 @@ package com.rsskey.server.Repository;
 
 import com.rsskey.server.DAO.Exception.DAOException;
 import com.rsskey.server.DAO.Exception.DAOFactory;
-import com.rsskey.server.DatabaseUtils.DbConnect;
 import com.rsskey.server.Models.RSSFeed;
-import com.rsskey.server.Models.RSSFeedItem;
-import com.rsskey.server.Models.User;
+import com.rsskey.server.Models.SuscriberRss;
 import com.rsskey.server.Utils.SQLHelper;
-import org.springframework.dao.support.DaoSupport;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.*;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-public class RssFeedRepository extends ARepository<RSSFeed> {
+public class SuscriberRssRepository extends ARepository<SuscriberRss> {
 
-    public RssFeedRepository(DAOFactory dao) {
+    public SuscriberRssRepository(DAOFactory dao) {
         super(dao);
     }
 
-    public RSSFeed add(RSSFeed model) {
-        String query = "INSERT INTO public.rssfeed(\"Title\", \"Link\", \"Description\", \"Language\", \"Copyright\", \"Pubdate\") VALUES (?, ?, ?, ?, ?, ?)";
-        RSSFeed DBModel = null;
+    public SuscriberRss add(SuscriberRss model) {
+        String query = "INSERT INTO public.suscriberrss(\"UserID\", \"RssID\") VALUES (?, ?)";
+        SuscriberRss DBModel = null;
         ArrayList<Long> result = null;
-        RssFeedItemRepository repoRssItem = DAOFactory.getInstance().getRssFeedItemRepository();
 
         try {
             Timestamp ts = new Timestamp(new Date().getTime());
 
-            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, model.getTitle(), model.getLink(), model.getDescription(), model.getLanguage(), model.getCopyright(), ts);
-            if (result != null && result.size() > 0 && (DBModel = this.findbyID(result.get(0))) != null) {
-                for (RSSFeedItem rss: DBModel.getItems()
-                     ) {
-                    rss.setRssID(DBModel.getID());
-                    repoRssItem.add(rss);
-                }
-            }
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, model.getUserID(), model.getRssID());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-
+            if (result != null && result.size() > 0)
+                DBModel = this.findbyID(result.get(0));
         }
         return DBModel;
     }
@@ -50,7 +39,7 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
     public Boolean delete(Long ID) throws DAOException {
         Boolean toreturn = false;
         ArrayList<Long>  result = null;
-        String query = "DELETE FROM public.rssfeed WHERE \"RssID\"=?";
+        String query = "DELETE FROM public.suscriberrss WHERE \"RssID\"=?";
 
         try {
             result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false, ID);
@@ -63,21 +52,21 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
     }
 
     @Override
-    public RSSFeed findbyID(Long ID) throws DAOException {
-        RSSFeed feed = new RSSFeed();
-        RSSFeed newFeed = null;
-        String query = "SELECT * FROM public.rssfeed where \"RssID\"=?";
+    public SuscriberRss findbyID(Long ID) throws DAOException {
+        SuscriberRss feed = new SuscriberRss();
+        SuscriberRss newFeed = null;
+        String query = "SELECT * FROM public.users where \"loginID \"=?";
 
         try {
-            newFeed = (RSSFeed)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, feed ,ID);
+            newFeed = (SuscriberRss)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, feed ,ID);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return newFeed;
     }
 
-    public RSSFeed update(RSSFeed model) {
-        RSSFeed updatedModel = null;
+    public SuscriberRss update(SuscriberRss model) {
+        SuscriberRss updatedModel = null;
 
         try {
             /*Statement state = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -116,21 +105,29 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
         return updatedModel;
     }
 
-    public List<RSSFeed> getRSSFeed(long IDUser)
+    public ArrayList<Long> getRSSFeed(long IDUser)
     {
-        ArrayList<Long> RssIDS;
-        ArrayList<RSSFeed> rssFeeds = new ArrayList<>();
+        RSSFeed feed = new RSSFeed();
+        RSSFeed newFeed = null;
+        String query = "SELECT RssID FROM public.suscriberrss where \"UserID\"=?";
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        ArrayList<Long> RssIDS = new ArrayList<>();
+        Connection connexion = null;
         try {
-            RssIDS = DAOFactory.getInstance().getSuscriberRepository().getRSSFeed(IDUser);
-
-            for (Long id: RssIDS) {
-                RSSFeed rss = this.findbyID(id);
-                if (rss != null)
-                    rssFeeds.add(rss);
+            connexion = this.daoFactory.getConnection();
+            preparedStatement = SQLHelper.initialisationRequetePreparee(connexion , query,false,IDUser);
+            resultSet = preparedStatement.executeQuery();
+            /* Parcours de la ligne de données de l'éventuel ResulSet retourné */
+            while ( resultSet.next() ) {
+                RssIDS.add(resultSet.getLong("RssID"));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        } catch ( SQLException e ) {
+            throw new DAOException( e );
+        } finally {
+            SQLHelper.closeCleanning( resultSet, preparedStatement, connexion);
         }
-        return rssFeeds;
+        return RssIDS;
     }
 }

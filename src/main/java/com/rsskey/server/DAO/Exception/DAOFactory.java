@@ -1,6 +1,8 @@
 package com.rsskey.server.DAO.Exception;
 
+import com.rsskey.server.Repository.RssFeedItemRepository;
 import com.rsskey.server.Repository.RssFeedRepository;
+import com.rsskey.server.Repository.SuscriberRssRepository;
 import com.rsskey.server.Repository.UserRepository;
 
 import java.sql.Connection;
@@ -83,5 +85,13 @@ public class DAOFactory {
      */
     public RssFeedRepository getRssFeedRepository() {
         return new RssFeedRepository( this );
+    }
+
+    public SuscriberRssRepository getSuscriberRepository() {
+        return new SuscriberRssRepository(this);
+    }
+
+    public RssFeedItemRepository getRssFeedItemRepository() {
+        return new RssFeedItemRepository(this);
     }
 }

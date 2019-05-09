@@ -2,41 +2,33 @@ package com.rsskey.server.Repository;
 
 import com.rsskey.server.DAO.Exception.DAOException;
 import com.rsskey.server.DAO.Exception.DAOFactory;
-import com.rsskey.server.DatabaseUtils.DbConnect;
 import com.rsskey.server.Models.RSSFeed;
 import com.rsskey.server.Models.RSSFeedItem;
-import com.rsskey.server.Models.User;
 import com.rsskey.server.Utils.SQLHelper;
-import org.springframework.dao.support.DaoSupport;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-public class RssFeedRepository extends ARepository<RSSFeed> {
+public class RssFeedItemRepository extends ARepository<RSSFeedItem> {
 
-    public RssFeedRepository(DAOFactory dao) {
+    public RssFeedItemRepository(DAOFactory dao) {
         super(dao);
     }
 
-    public RSSFeed add(RSSFeed model) {
-        String query = "INSERT INTO public.rssfeed(\"Title\", \"Link\", \"Description\", \"Language\", \"Copyright\", \"Pubdate\") VALUES (?, ?, ?, ?, ?, ?)";
-        RSSFeed DBModel = null;
+    public RSSFeedItem add(RSSFeedItem model) {
+        String query = "INSERT INTO public.rssfeeditem(\"Guid\", \"Description\", \"Link\", \"Title\", \"Author\", \"RssID\") VALUES (?, ?, ?, ?, ?, ?);";
+        RSSFeedItem DBModel = null;
         ArrayList<Long> result = null;
-        RssFeedItemRepository repoRssItem = DAOFactory.getInstance().getRssFeedItemRepository();
 
         try {
             Timestamp ts = new Timestamp(new Date().getTime());
 
-            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, model.getTitle(), model.getLink(), model.getDescription(), model.getLanguage(), model.getCopyright(), ts);
-            if (result != null && result.size() > 0 && (DBModel = this.findbyID(result.get(0))) != null) {
-                for (RSSFeedItem rss: DBModel.getItems()
-                     ) {
-                    rss.setRssID(DBModel.getID());
-                    repoRssItem.add(rss);
-                }
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, model.getGuid(),
+                    model.getDescription(), model.getLink(), model.getTitle(), model.getAuthor(), model.getRssID());
+            if (result != null && result.size() > 0) {
+                DBModel = this.findbyID(result.get(0));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,21 +55,21 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
     }
 
     @Override
-    public RSSFeed findbyID(Long ID) throws DAOException {
-        RSSFeed feed = new RSSFeed();
-        RSSFeed newFeed = null;
+    public RSSFeedItem findbyID(Long ID) throws DAOException {
+        RSSFeedItem feed = new RSSFeedItem();
+        RSSFeedItem newFeed = null;
         String query = "SELECT * FROM public.rssfeed where \"RssID\"=?";
 
         try {
-            newFeed = (RSSFeed)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, feed ,ID);
+            newFeed = (RSSFeedItem) SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, feed ,ID);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return newFeed;
     }
 
-    public RSSFeed update(RSSFeed model) {
-        RSSFeed updatedModel = null;
+    public RSSFeedItem update(RSSFeedItem model) {
+        RSSFeedItem updatedModel = null;
 
         try {
             /*Statement state = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -114,23 +106,5 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
             e.printStackTrace();
         }
         return updatedModel;
-    }
-
-    public List<RSSFeed> getRSSFeed(long IDUser)
-    {
-        ArrayList<Long> RssIDS;
-        ArrayList<RSSFeed> rssFeeds = new ArrayList<>();
-        try {
-            RssIDS = DAOFactory.getInstance().getSuscriberRepository().getRSSFeed(IDUser);
-
-            for (Long id: RssIDS) {
-                RSSFeed rss = this.findbyID(id);
-                if (rss != null)
-                    rssFeeds.add(rss);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return rssFeeds;
     }
 }

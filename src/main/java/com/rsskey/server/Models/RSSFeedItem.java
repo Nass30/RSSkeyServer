@@ -1,6 +1,10 @@
 package com.rsskey.server.Models;
 
-public class RSSFeedItem {
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+public class RSSFeedItem implements IModel<RSSFeedItem> {
 
     // MARK: - Properties
 
@@ -9,15 +13,29 @@ public class RSSFeedItem {
     private String description;
     private String link;
     private String author;
+    private Long ID;
+    private Long rssID;
 
     // MARK: Constructor
 
-    public RSSFeedItem(String guid, String title, String description, String link, String author) {
+    public RSSFeedItem() {
+        this.guid = null;
+        this.title = null;
+        this.description = null;
+        this.link = null;
+        this.author = null;
+        this.rssID = null;
+        this.ID = null;
+    }
+
+    public RSSFeedItem(String guid, String title, String description, String link, String author, Long ID, Long rssID) {
         this.guid = guid;
         this.title = title;
         this.description = description;
         this.link = link;
         this.author = author;
+        this.rssID = rssID;
+        this.ID = ID;
     }
 
     public String getGuid() { return guid; }
@@ -43,6 +61,22 @@ public class RSSFeedItem {
     }
     public void setAuthor(String author) { this.author = author; }
 
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
+    }
+
+    public Long getRssID() {
+        return rssID;
+    }
+
+    public void setRssID(Long rssID) {
+        this.rssID = rssID;
+    }
+
     @Override
     public String toString() {
         return "RSSItem{" +
@@ -52,5 +86,16 @@ public class RSSFeedItem {
                 ", link='" + link + '\'' +
                 ", author='" + author + '\'' +
                 '}';
+    }
+
+    @Override
+    public RSSFeedItem map(ResultSet resultSet) throws SQLException {
+        this.setRssID( resultSet.getLong( "RssID" ) );
+        this.setGuid( resultSet.getString( "Guid" ) );
+        this.setAuthor( resultSet.getString( "Author" ) );
+        this.setLink( resultSet.getString( "Link" ) );
+        this.setDescription( resultSet.getString( "Description" ) );
+        this.setID( resultSet.getLong( "RssItemID" ) );
+        return this;
     }
 }

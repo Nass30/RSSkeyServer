@@ -97,7 +97,7 @@ public class RSSFeedParser {
                     }
                 } else if (event.isEndElement()) {
                     if (event.asEndElement().getName().getLocalPart() == (ITEM)) {
-                        RSSFeedItem item = new RSSFeedItem(guid, title, description, link, author);
+                        RSSFeedItem item = new RSSFeedItem(guid, title, description, link, author, null, null);
                         feed.getItems().add(item);
                         event = eventReader.nextEvent();
                         continue;
