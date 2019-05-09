@@ -1,6 +1,6 @@
 package com.rsskey.server.Controllers.RSSFeedsController;
 
-import com.rsskey.server.Models.APIError;
+import com.rsskey.server.Controllers.APIError;
 import com.rsskey.server.Models.RSSFeed;
 import com.rsskey.server.RSSParser.RSSFeedParser;
 import org.springframework.http.HttpStatus;
@@ -16,11 +16,15 @@ import java.lang.Long;
 public class RSSFeedController {
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<RSSFeed> getAllFeeds() {
+    public ResponseEntity getAllFeeds(@RequestHeader("token") String token) {
+        System.out.println(token);
+        if (!token.equals("token")) {
+            return APIError.unauthorizedResponse();
+        }
         RSSFeed feed = new RSSFeed("Title", "link", "description", "language", "copyright", "date", new Long(01));
         List array = new ArrayList<RSSFeed>();
         array.add(feed);
-        return array;
+        return new ResponseEntity(array, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)

@@ -1,7 +1,7 @@
 package com.rsskey.server.Controllers.UsersController;
 
 import com.rsskey.server.DAO.Exception.DAOFactory;
-import com.rsskey.server.Models.APIError;
+import com.rsskey.server.Controllers.APIError;
 import com.rsskey.server.Models.User;
 import com.rsskey.server.Repository.UserRepository;
 import com.rsskey.server.Utils.TokenAuth;
@@ -86,7 +86,7 @@ public class UsersController {
             email.setMsg("Hello "+ user.getLogin() + ",\nWelcome to RSSKey, Sah, What a pleasure to see you here !!! \nMuch love from RSSKey Team!\n\n\n\n\nImad le Bronze");
             email.addTo(user.getEmail());
             email.send();
-        } catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity(new APIError(HttpStatus.INTERNAL_SERVER_ERROR,"Failure on sending email" , e), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         User added = repo.add(user);

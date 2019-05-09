@@ -1,6 +1,7 @@
-package com.rsskey.server.Models;
+package com.rsskey.server.Controllers;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +11,10 @@ public class APIError {
     public LocalDateTime timestamp;
     public String message;
     public String debugMessage;
+
+    public static ResponseEntity unauthorizedResponse() {
+        return new ResponseEntity( new APIError(HttpStatus.UNAUTHORIZED, "Request Unauthorized"), HttpStatus.UNAUTHORIZED);
+    }
 
     private APIError() {
         timestamp = LocalDateTime.now();
