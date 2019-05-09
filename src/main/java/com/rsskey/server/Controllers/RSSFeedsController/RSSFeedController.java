@@ -1,10 +1,12 @@
 package com.rsskey.server.Controllers.RSSFeedsController;
 
 import com.rsskey.server.Controllers.APIError;
+import com.rsskey.server.DAO.Exception.DAOFactory;
 import com.rsskey.server.Models.Category;
 import com.rsskey.server.Models.RSSFeed;
 import com.rsskey.server.Models.User;
 import com.rsskey.server.RSSParser.RSSFeedParser;
+import com.rsskey.server.Repository.RssFeedRepository;
 import com.rsskey.server.Utils.TokenAuth;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -141,6 +143,47 @@ public class RSSFeedController {
         /*if (repo.findCategoryById(id) == null) {
             return new ResponseEntity(new APIError(HttpStatus.FORBIDDEN, "No such Category for Id" + id), HttpStatus.FORBIDDEN);
         }*/
+
+        return ResponseEntity.ok(null);
+    }
+
+    @RequestMapping(value = "/favorites", method = RequestMethod.GET)
+    public ResponseEntity getFavorites(@RequestHeader("token") String token) {
+        User user = TokenAuth.getUserByToken(token);
+        if (user == null) {
+            return APIError.unauthorizedResponse();
+        }
+        List<Category> categories = new ArrayList<Category>();
+        categories.add(new Category("Tech", new ArrayList(), new Long(32)));
+        categories.add(new Category("Food", new ArrayList(), new Long(33)));
+        return new ResponseEntity(categories, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/favorites/add", method = RequestMethod.POST)
+    public ResponseEntity addFavorites(@RequestHeader("token") String token, @RequestBody RSSFeed rssFeed) {
+        User user = TokenAuth.getUserByToken(token);
+        if (user == null) {
+            return APIError.unauthorizedResponse();
+        }
+        if (rssFeed.getID() == null) {
+            return new ResponseEntity(new APIError(HttpStatus.BAD_REQUEST, "Missing title of the Rssfeed"), HttpStatus.BAD_REQUEST);
+        }
+        RssFeedRepository repo = DAOFactory.getInstance().getRssFeedRepository();
+        if (repo.findbyID(rssFeed.getID()) == null) {
+            return new ResponseEntity(new APIError(HttpStatus.BAD_REQUEST, "Unknown RssFeed Id "+ rssFeed.getID()), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity(new Category("Tech", new ArrayList(), new Long(42)), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/favorites/delete/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteFavorite(@RequestHeader("token") String token, @PathVariable("id") Long id) {
+        User user = TokenAuth.getUserByToken(token);
+        if (user == null) {
+            return APIError.unauthorizedResponse();
+        }
+        if (id == null) {
+            return new ResponseEntity(new APIError(HttpStatus.BAD_REQUEST, "Missing id of the RssFeed"), HttpStatus.BAD_REQUEST);
+        }
 
         return ResponseEntity.ok(null);
     }
