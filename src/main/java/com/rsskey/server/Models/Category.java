@@ -5,10 +5,20 @@ import java.util.List;
 public class Category {
     public String title;
     public List<Long> feeds;
+    public Long id;
 
-    public Category(String title, List<Long> feeds) {
+    public Category(String title, List<Long> feeds, Long id) {
         this.title = title;
         this.feeds = feeds;
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {
