@@ -124,12 +124,13 @@ public class UserRepository extends ARepository<User> {
 
     @Override
     public User update(User model) {
+
         ArrayList<Long> result = null;
         User updatedModel = null;
-        String query = "UPDATE public.users SET \"Login\"=?, \"Password\"=?, \"Email\"=? WHERE \"LoginID\"=?";
+        String query = "UPDATE public.users SET \"Login\"=?, \"Password\"=?, \"Email\"=?, \"Token\"=?  WHERE \"LoginID\"=?";
 
         try {
-            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false, model.getLogin(), model.getPassword(), model.getEmail(), model.getID());
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false, model.getLogin(), model.getPassword(), model.getEmail(), model.getToken(), model.getID());
 
         } catch (Exception e) {
             e.printStackTrace();
