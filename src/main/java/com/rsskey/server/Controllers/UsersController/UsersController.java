@@ -40,31 +40,34 @@ public class UsersController {
         }
     }
 
-    @RequestMapping(value="/updatepassword/{id}", method = PUT)
-    public ResponseEntity modify(@PathVariable Long id, @RequestParam(value="oldpassword") String oldPassword, @RequestParam(value="password") String password)
+    @RequestMapping(value="/updatepassword", method = PUT)
+    public ResponseEntity modify(@RequestParam(value="oldpassword") String oldPassword, @RequestParam(value="password") String password, @RequestHeader("token") String token)
     {
-        System.out.print("ID" + id.toString());
-        UserRepository repo =  DAOFactory.getInstance().getUserRepository();
-        User user = repo.findbyID(id);
-        if (user == null || user.getPassword() != oldPassword) {
+        User user = TokenAuth.getUserByToken(token);
+        if (user == null) {
+            return APIError.unauthorizedResponse();
+        }
+        if (user.getPassword() != oldPassword) {
             return new ResponseEntity(new APIError(HttpStatus.UNAUTHORIZED, "Wrong id or old password"), HttpStatus.UNAUTHORIZED);
         }
         user.setPassword(password);
+        UserRepository repo = DAOFactory.getInstance().getUserRepository();
         repo.update(user);
         return ResponseEntity.ok(null);
     }
 
-    @RequestMapping(value = "/update/{id}", method = PUT)
-    public User infoUpdate(@PathVariable Long id, @RequestParam(value="email") String email)
+    @RequestMapping(value = "/update", method = PUT)
+    public ResponseEntity infoUpdate(@RequestParam(value="email") String email, @RequestHeader("token") String token)
     {
-        UserRepository repo = DAOFactory.getInstance().getUserRepository();
-        User user = repo.findbyID(id);
-
-        if(user != null) {
-            user.setEmail(email);
-            repo.update(user);
+        User user = TokenAuth.getUserByToken(token);
+        if (user == null) {
+            return APIError.unauthorizedResponse();
         }
-        return user;
+        UserRepository repo = DAOFactory.getInstance().getUserRepository();
+
+        user.setEmail(email);
+        repo.update(user);
+        return ResponseEntity.ok(null);
     }
 
     @RequestMapping(value="/create", method = POST)
@@ -90,7 +93,7 @@ public class UsersController {
             email.setSSLOnConnect(true);
             email.setFrom("user@gmail.com");
             email.setSubject("Welcome to RSSKey !");
-            email.setMsg("Hello "+ user.getLogin() + ",\nWelcome to RSSKey, Sah, What a pleasure to see you here !!! \nMuch love from RSSKey Team!\n\n\n\n\nImad le Bronze");
+            email.setMsg("Hello "+ user.getLogin() + ",\nWelcome to RSSKey, Sah, What a pleasure to see you here !!! \nMuch love from RSSKey Team!");
             email.addTo(user.getEmail());
             email.send();
         } catch (Exception e) {
@@ -100,16 +103,14 @@ public class UsersController {
         return new ResponseEntity(added, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/delete/{id}", method = GET)
-    public Boolean delete(@PathVariable Long id) {
-        UserRepository repo =  DAOFactory.getInstance().getUserRepository();
-        User user = repo.findbyID(id);
-        Boolean erased = false;
-
-        if (user != null) {
-            repo.delete(id);
-            erased = true;
+    @RequestMapping(value = "/delete", method = GET)
+    public ResponseEntity delete(@RequestHeader("token") String token) {
+        User user = TokenAuth.getUserByToken(token);
+        if (user == null) {
+            return APIError.unauthorizedResponse();
         }
-        return erased;
+        UserRepository repo =  DAOFactory.getInstance().getUserRepository();
+        repo.delete(user.getID());
+        return ResponseEntity.ok(null);
     }
 }

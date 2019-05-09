@@ -2,6 +2,10 @@ package com.rsskey.server.Utils;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
+
+import com.rsskey.server.DAO.Exception.DAOFactory;
+import com.rsskey.server.Models.User;
+import com.rsskey.server.Repository.UserRepository;
 import io.jsonwebtoken.*;
 import java.util.Date;
 import io.jsonwebtoken.Jwts;
@@ -58,6 +62,17 @@ public class TokenAuth {
                isValid = false;
         }
         return isValid;
+    }
+
+    public static User getUserByToken(String token) {
+        if (token == null) {
+            return null;
+        }
+        UserRepository repo = DAOFactory.getInstance().getUserRepository();
+        if (!TokenAuth.TokenIsValid(token)) {
+            return null;
+        }
+        return repo.findByToken(token);
     }
 
     public static Claims decodeJWT(String token) {

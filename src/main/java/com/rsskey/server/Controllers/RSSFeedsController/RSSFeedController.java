@@ -2,7 +2,9 @@ package com.rsskey.server.Controllers.RSSFeedsController;
 
 import com.rsskey.server.Controllers.APIError;
 import com.rsskey.server.Models.RSSFeed;
+import com.rsskey.server.Models.User;
 import com.rsskey.server.RSSParser.RSSFeedParser;
+import com.rsskey.server.Utils.TokenAuth;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +19,8 @@ public class RSSFeedController {
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity getAllFeeds(@RequestHeader("token") String token) {
-        System.out.println(token);
-        if (!token.equals("token")) {
+        User user = TokenAuth.getUserByToken(token);
+        if (user == null) {
             return APIError.unauthorizedResponse();
         }
         RSSFeed feed = new RSSFeed("Title", "link", "description", "language", "copyright", "date", new Long(01));
@@ -28,7 +30,11 @@ public class RSSFeedController {
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public ResponseEntity putFeed(@RequestBody RSSFeedPutRequestBody url) {
+    public ResponseEntity putFeed(@RequestBody RSSFeedPutRequestBody url, @RequestHeader("token") String token) {
+        User user = TokenAuth.getUserByToken(token);
+        if (user == null) {
+            return APIError.unauthorizedResponse();
+        }
         try {
             RSSFeedParser rssFeedParser = new RSSFeedParser(url.url);
             RSSFeed rssFeed = rssFeedParser.readFeed();
@@ -40,7 +46,11 @@ public class RSSFeedController {
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteFeed(@PathVariable("id") Long id) {
+    public ResponseEntity deleteFeed(@PathVariable("id") Long id, @RequestHeader("token") String token) {
+        User user = TokenAuth.getUserByToken(token);
+        if (user == null) {
+            return APIError.unauthorizedResponse();
+        }
         if (id == null) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -48,7 +58,11 @@ public class RSSFeedController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity getFeed(Long id) {
+    public ResponseEntity getFeed(Long id, @RequestHeader("token") String token) {
+        User user = TokenAuth.getUserByToken(token);
+        if (user == null) {
+            return APIError.unauthorizedResponse();
+        }
         if (id == null) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -56,7 +70,11 @@ public class RSSFeedController {
     }
 
     @RequestMapping(value = "/categories", method = RequestMethod.GET)
-    public ResponseEntity getCategories() {
+    public ResponseEntity getCategories(@RequestHeader("token") String token) {
+        User user = TokenAuth.getUserByToken(token);
+        if (user == null) {
+            return APIError.unauthorizedResponse();
+        }
         return ResponseEntity.ok(null);
     }
 }
