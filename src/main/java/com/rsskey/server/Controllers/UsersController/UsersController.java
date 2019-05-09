@@ -4,6 +4,7 @@ import com.rsskey.server.DAO.Exception.DAOFactory;
 import com.rsskey.server.Models.APIError;
 import com.rsskey.server.Models.User;
 import com.rsskey.server.Repository.UserRepository;
+import com.rsskey.server.Utils.TokenAuth;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.SimpleEmail;
@@ -23,10 +24,10 @@ public class UsersController {
     public ResponseEntity authentification(@RequestParam(value="login") String name ,@RequestParam(value="password") String password)
     {
         UserRepository repo =  DAOFactory.getInstance().getUserRepository();
-        String token = null;
+        User user = null;
 
-        if(repo.findByLoginPass(name,password) != null)
-            return new ResponseEntity(new AuthorizationToken("eyJpc3MiOiJ0b3B0YWwuY29tIiwiZXhwIjoxNDI2NDIwODAwLCJodHRwOi8vdG9wdGFsLmNvbS9qd3RfY2xhaW1zL2lzX2FkbWluIjp0cnVlLCJjb21wYW55IjoiVG9wdGFsIiwiYXdlc29tZSI6dHJ1ZX0"),
+        if((user = repo.findByLoginPass(name,password)) != null)
+            return new ResponseEntity(new AuthorizationToken(TokenAuth.createJWT(user.getID().toString(),user.getLogin(),user.getEmail(),80000000 )),
                     HttpStatus.OK);
         else
             return new ResponseEntity(new APIError(HttpStatus.UNAUTHORIZED, "Wrong email - password"), HttpStatus.UNAUTHORIZED);
