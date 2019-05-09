@@ -33,6 +33,7 @@ public class UserRepository extends ARepository<User> {
             if (result != null && result.size() > 0)
                 DBModel = this.findbyID(result.get(0));
         }
+        System.out.println(DBModel.toString());
         return DBModel;
     }
 
@@ -83,10 +84,23 @@ public class UserRepository extends ARepository<User> {
     public User findbyLogin(String Login) {
         User user = new User();
         User findedUser = null;
-        String query = "SELECT * FROM public.users where \"login \"=?";
+        String query = "SELECT * FROM public.users where \"Login\"=?";
 
         try {
             findedUser = (User)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, user ,Login);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return findedUser;
+    }
+
+    public User findbyMail(String Mail) {
+        User user = new User();
+        User findedUser = null;
+        String query = "SELECT * FROM public.users where \"Email\"=?";
+
+        try {
+            findedUser = (User)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, user, Mail);
         } catch (Exception e) {
             e.printStackTrace();
         }

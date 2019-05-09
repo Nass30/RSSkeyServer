@@ -71,9 +71,12 @@ public class SQLHelper {
             if ( valeursAutoGenerees.next() ) {
                 /* Puis initialisation de la propriété id du bean Utilisateur avec sa valeur */
                 ids.add( valeursAutoGenerees.getLong( 1 ) );
-            } /* else {
+                System.out.println(valeursAutoGenerees.getLong( 1 ));
+                System.out.println("sqlhelper");
+            } else {
+                System.out.println("sql");
                 throw new DAOException( "Échec de la création de l'utilisateur en base, aucun ID auto-généré retourné." );
-            } */
+            }
         } catch ( SQLException e ) {
             throw new DAOException( e );
         } finally {
@@ -111,7 +114,7 @@ public class SQLHelper {
      */
     public static PreparedStatement initialisationRequetePreparee( Connection connexion, String sql, boolean returnGeneratedKeys, Object... objets ) throws SQLException {
         System.out.print("passe par la !" + objets.length);
-        PreparedStatement preparedStatement = connexion.prepareStatement( sql );
+        PreparedStatement preparedStatement = connexion.prepareStatement( sql, returnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS );
         for ( int i = 0; i < objets.length; i++ ) {
             preparedStatement.setObject( i + 1, objets[i] );
         }
