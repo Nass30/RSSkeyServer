@@ -58,11 +58,14 @@ public class RssFeedItemRepository extends ARepository<RSSFeedItem> {
     public RSSFeedItem findbyID(Long ID) throws DAOException {
         RSSFeedItem feed = new RSSFeedItem();
         RSSFeedItem newFeed = null;
-        String query = "SELECT * FROM public.rssfeed where \"RssID\"=?";
+        String query = "SELECT * FROM public.rssfeed where \"RssItemID\"=?";
 
         try {
+            System.out.println("Find RssFeedItem By ID");
             newFeed = (RSSFeedItem) SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, feed ,ID);
+            System.out.println("Find " + newFeed);
         } catch (Exception e) {
+            System.out.println("Error ");
             e.printStackTrace();
         }
         return newFeed;

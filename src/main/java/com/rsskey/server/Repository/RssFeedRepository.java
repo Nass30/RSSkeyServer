@@ -34,8 +34,8 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
             System.out.println("Result of the query " + result);
             if (result != null && result.size() > 0 && (DBModel = this.findbyID(result.get(0))) != null) {
                 System.out.println("Result of the DBModel " + DBModel);
-                for (RSSFeedItem rss: model.getItems()
-                     ) {
+                for (RSSFeedItem rss: model.getItems()) {
+                    System.out.println(rss.getGuid());
                     rss.setRssID(DBModel.getID());
                     RSSFeedItem item = repoRssItem.add(rss);
                     DBModel.items.add(item);
