@@ -30,12 +30,15 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
         try {
             Timestamp ts = new Timestamp(new Date().getTime());
 
-            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, model.getTitle(), model.getLink(), model.getDescription(), model.getLanguage(), model.getCopyright(), ts);
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, "RssID", model.getTitle(), model.getLink(), model.getDescription(), model.getLanguage(), model.getCopyright(), ts);
+            System.out.println("Result of the query " + result);
             if (result != null && result.size() > 0 && (DBModel = this.findbyID(result.get(0))) != null) {
-                for (RSSFeedItem rss: DBModel.getItems()
+                System.out.println("Result of the DBModel " + DBModel);
+                for (RSSFeedItem rss: model.getItems()
                      ) {
                     rss.setRssID(DBModel.getID());
-                    repoRssItem.add(rss);
+                    RSSFeedItem item = repoRssItem.add(rss);
+                    DBModel.items.add(item);
                 }
             }
         } catch (Exception e) {
@@ -53,7 +56,7 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
         String query = "DELETE FROM public.rssfeed WHERE \"RssID\"=?";
 
         try {
-            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false, ID);
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false, null, ID);
             if (result != null && result.size() > 0)
                 toreturn = true;
         } catch (Exception e) {
@@ -67,12 +70,13 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
         RSSFeed feed = new RSSFeed();
         RSSFeed newFeed = null;
         String query = "SELECT * FROM public.rssfeed where \"RssID\"=?";
-
+        System.out.println("Find RssFeed by Id" + ID);
         try {
             newFeed = (RSSFeed)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, feed ,ID);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("newFeed" + newFeed);
         return newFeed;
     }
 

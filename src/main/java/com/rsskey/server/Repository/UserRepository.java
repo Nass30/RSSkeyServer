@@ -26,7 +26,7 @@ public class UserRepository extends ARepository<User> {
         String query = "INSERT INTO public.users(\"Login\", \"Password\", \"Email\") VALUES (?, ?, ?)";
 
         try {
-            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, model.getLogin(), model.getPassword(), model.getEmail());
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true,"LoginID", model.getLogin(), model.getPassword(), model.getEmail());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -43,7 +43,7 @@ public class UserRepository extends ARepository<User> {
         String query = "DELETE FROM public.users WHERE \"LoginID\"=?";
 
         try {
-            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, ID);
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, "LoginID", ID);
             if (result != null && result.size() > 0)
                 toreturn = true;
         } catch (Exception e) {
@@ -129,7 +129,7 @@ public class UserRepository extends ARepository<User> {
         String query = "UPDATE public.users SET \"Login\"=?, \"Password\"=?, \"Email\"=?, \"Token\"=?  WHERE \"LoginID\"=?";
 
         try {
-            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false, model.getLogin(), model.getPassword(), model.getEmail(), model.getToken(), model.getID());
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(), query,false, null, model.getLogin(), model.getPassword(), model.getEmail(), model.getToken(), model.getID());
 
         } catch (Exception e) {
             e.printStackTrace();

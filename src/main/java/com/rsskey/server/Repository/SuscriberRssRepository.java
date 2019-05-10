@@ -25,7 +25,7 @@ public class SuscriberRssRepository extends ARepository<SuscriberRss> {
         try {
             Timestamp ts = new Timestamp(new Date().getTime());
 
-            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, model.getUserID(), model.getRssID());
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, "SuscriberID", model.getUserID(), model.getRssID());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -42,7 +42,7 @@ public class SuscriberRssRepository extends ARepository<SuscriberRss> {
         String query = "DELETE FROM public.suscriberrss WHERE \"RssID\"=?";
 
         try {
-            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false, ID);
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false, null, ID);
             if (result != null && result.size() > 0)
                 toreturn = true;
         } catch (Exception e) {

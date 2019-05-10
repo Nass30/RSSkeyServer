@@ -25,7 +25,7 @@ public class RssFeedItemRepository extends ARepository<RSSFeedItem> {
         try {
             Timestamp ts = new Timestamp(new Date().getTime());
 
-            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, model.getGuid(),
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, "RssItemID", model.getGuid(),
                     model.getDescription(), model.getLink(), model.getTitle(), model.getAuthor(), model.getRssID());
             if (result != null && result.size() > 0) {
                 DBModel = this.findbyID(result.get(0));
@@ -45,7 +45,7 @@ public class RssFeedItemRepository extends ARepository<RSSFeedItem> {
         String query = "DELETE FROM public.rssfeed WHERE \"RssID\"=?";
 
         try {
-            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false, ID);
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false, null, ID);
             if (result != null && result.size() > 0)
                 toreturn = true;
         } catch (Exception e) {

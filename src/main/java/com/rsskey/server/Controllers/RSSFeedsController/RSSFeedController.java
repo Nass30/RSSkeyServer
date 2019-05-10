@@ -61,8 +61,9 @@ public class RSSFeedController {
         try {
             RSSFeedParser rssFeedParser = new RSSFeedParser(url.url);
             RSSFeed rssFeed = rssFeedParser.readFeed();
-            DAOFactory.getInstance().getRssFeedRepository().add(rssFeed);
-            return new ResponseEntity<>(rssFeed, HttpStatus.OK);
+            RSSFeed result = DAOFactory.getInstance().getRssFeedRepository().add(rssFeed);
+            System.out.println("feeds/user/add : " + result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
         catch(Exception e) {
             return new ResponseEntity<>(new APIError(HttpStatus.BAD_REQUEST, e), HttpStatus.BAD_REQUEST);

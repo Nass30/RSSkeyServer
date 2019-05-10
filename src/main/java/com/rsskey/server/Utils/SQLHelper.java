@@ -52,7 +52,7 @@ public class SQLHelper {
         return map;
     }
 
-    public static ArrayList<Long> executeNonQuery(Connection connexion, String sql, boolean returnGeneratedKeys, Object... objets )
+    public static ArrayList<Long> executeNonQuery(Connection connexion, String sql, boolean returnGeneratedKeys, String columnId, Object... objets )
     {
         PreparedStatement preparedStatement = null;
         ResultSet valeursAutoGenerees = null;
@@ -60,21 +60,24 @@ public class SQLHelper {
 
         try {
             /* Récupération d'une connexion depuis la Factory */
+            System.out.println("Init Request..." + objets);
             preparedStatement = initialisationRequetePreparee( connexion, sql, returnGeneratedKeys, objets );
+            System.out.println("Execute Update...");
             int statut = preparedStatement.executeUpdate();
             /* Analyse du statut retourné par la requête d'insertion */
+            System.out.println("Status : " + statut);
             if ( statut == 0 ) {
                 throw new DAOException( "Échec de la création de l'utilisateur, aucune ligne ajoutée dans la table." );
             }
             /* Récupération de l'id auto-généré par la requête d'insertion */
             valeursAutoGenerees = preparedStatement.getGeneratedKeys();
             if ( valeursAutoGenerees.next() ) {
+                System.out.println("Valeurs auto generes next() réussi");
                 /* Puis initialisation de la propriété id du bean Utilisateur avec sa valeur */
-                ids.add( valeursAutoGenerees.getLong( 1 ) );
-                System.out.println(valeursAutoGenerees.getLong( 1 ));
-                System.out.println("sqlhelper");
+                ids.add( valeursAutoGenerees.getLong( columnId ) );
+                System.out.println("Column id " + valeursAutoGenerees.getLong(columnId));
             } else {
-                System.out.println("sql");
+                System.out.println("Valeurs auto generes next() failed");
                 throw new DAOException( "Échec de la création de l'utilisateur en base, aucun ID auto-généré retourné." );
             }
         } catch ( SQLException e ) {
@@ -98,8 +101,8 @@ public class SQLHelper {
             /* Parcours de la ligne de données de l'éventuel ResulSet retourné */
             while ( resultSet.next() ) {
                 DBModel.add(model.map( resultSet ));
-                System.out.print("TEST SQL EXECUTION !!");
-                System.out.print(model.toString());
+                System.out.println(" !!");
+                System.out.println(model.toString());
             }
         } catch ( SQLException e ) {
             throw new DAOException( e );

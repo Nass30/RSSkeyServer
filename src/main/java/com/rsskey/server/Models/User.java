@@ -85,7 +85,7 @@ public class User implements IModel<User> {
     @Override
     public User map(ResultSet resultSet) throws SQLException {
 
-        System.out.print(resultSet);
+        System.out.println("Map User Result : " + resultSet);
         this.setID( resultSet.getLong( "LoginID" ) );
         this.setEmail( resultSet.getString( "Email" ) );
         this.setPassword( resultSet.getString( "Password" ) );

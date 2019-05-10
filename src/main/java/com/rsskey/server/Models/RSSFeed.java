@@ -87,6 +87,13 @@ public class RSSFeed implements IModel<RSSFeed>{
 
     @Override
     public RSSFeed map(ResultSet resultSet) throws SQLException {
-        return null;
+        this.setTitle(resultSet.getString("Title"));
+        this.setID(resultSet.getLong("RssID"));
+        this.setCopyright(resultSet.getString("Copyright"));
+        this.setDescription(resultSet.getString("Description"));
+        this.setPubDate(resultSet.getString("Pubdate"));
+        this.setLanguage(resultSet.getString("Language"));
+        this.setLink(resultSet.getString("Link"));
+        return this;
     }
 }
