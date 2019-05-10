@@ -59,6 +59,8 @@ public class RSSFeedController {
             return APIError.unauthorizedResponse();
         }
         try {
+            RssFeedRepository repo = DAOFactory.getInstance().getRssFeedRepository();
+
             RSSFeedParser rssFeedParser = new RSSFeedParser(url.url);
             RSSFeed rssFeed = rssFeedParser.readFeed();
             RSSFeed result = DAOFactory.getInstance().getRssFeedRepository().add(rssFeed);
