@@ -33,7 +33,6 @@ public class UserRepository extends ARepository<User> {
             if (result != null && result.size() > 0)
                 DBModel = this.findbyID(result.get(0));
         }
-        System.out.println(DBModel.toString());
         return DBModel;
     }
 

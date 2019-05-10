@@ -76,6 +76,19 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
         return newFeed;
     }
 
+    /*public List<RSSFeed> getAllFeeds() throws DAOException {
+        RSSFeed feed = new RSSFeed();
+        RSSFeed newFeed = null;
+        String query = "SELECT * FROM public.rssfeed where \"RssID\"=?";
+
+        try {
+            newFeed = (RSSFeed)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, feed ,ID);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return newFeed;
+    }*/
+
     public RSSFeed update(RSSFeed model) {
         RSSFeed updatedModel = null;
 

@@ -20,17 +20,9 @@ import java.lang.Long;
 @RequestMapping(path="/feeds")
 public class RSSFeedController {
 
-    @RequestMapping(value="/user", method = RequestMethod.GET)
-    public ResponseEntity getAllFeedsUser(@RequestHeader("token") String token) {
-        User user = TokenAuth.getUserByToken(token);
-        List array = null;
-        if (user == null) {
-            return APIError.unauthorizedResponse();
-        }
-        array = DAOFactory.getInstance().getRssFeedRepository().getRSSFeed(user.getID());
-        return new ResponseEntity(array, HttpStatus.OK);
-    }
-
+    /*
+     List all feeds.
+     */
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity getAllFeeds(@RequestHeader("token") String token) {
         User user = TokenAuth.getUserByToken(token);
@@ -43,6 +35,23 @@ public class RSSFeedController {
         return new ResponseEntity(array, HttpStatus.OK);
     }
 
+    /*
+     List all feeds of a user.
+     */
+    @RequestMapping(value="/user", method = RequestMethod.GET)
+    public ResponseEntity getAllFeedsUser(@RequestHeader("token") String token) {
+        User user = TokenAuth.getUserByToken(token);
+        List array = null;
+        if (user == null) {
+            return APIError.unauthorizedResponse();
+        }
+        array = DAOFactory.getInstance().getRssFeedRepository().getRSSFeed(user.getID());
+        return new ResponseEntity(array, HttpStatus.OK);
+    }
+
+    /*
+     Add a feed.
+     */
     @RequestMapping(value = "/user/add", method = RequestMethod.POST)
     public ResponseEntity putFeed(@RequestBody RSSFeedPutRequestBody url, @RequestHeader("token") String token) {
         User user = TokenAuth.getUserByToken(token);
@@ -60,6 +69,9 @@ public class RSSFeedController {
         }
     }
 
+    /*
+     Delete a feed in user's data.
+     */
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity deleteFeed(@PathVariable("id") Long id, @RequestHeader("token") String token) {
         User user = TokenAuth.getUserByToken(token);
@@ -72,6 +84,9 @@ public class RSSFeedController {
         return ResponseEntity.ok(null);
     }
 
+    /*
+        Get a feed from it's id.
+     */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity getFeed(Long id, @RequestHeader("token") String token) {
         User user = TokenAuth.getUserByToken(token);
@@ -84,6 +99,9 @@ public class RSSFeedController {
         return ResponseEntity.ok(null);
     }
 
+    /*
+     List all categories.
+     */
     @RequestMapping(value = "/categories", method = RequestMethod.GET)
     public ResponseEntity getCategories(@RequestHeader("token") String token) {
         User user = TokenAuth.getUserByToken(token);
@@ -96,6 +114,9 @@ public class RSSFeedController {
         return new ResponseEntity(categories, HttpStatus.OK);
     }
 
+    /*
+     List all feeds for a category.
+     */
     @RequestMapping(value = "/categories/{id}", method = RequestMethod.GET)
     public ResponseEntity getCategoryFeeds(@RequestHeader("token") String token, @PathVariable("id") Long id) {
         User user = TokenAuth.getUserByToken(token);
@@ -108,6 +129,9 @@ public class RSSFeedController {
         return new ResponseEntity(new Category("Tech", new ArrayList(), id), HttpStatus.OK);
     }
 
+    /*
+     Add a category.
+     */
     @RequestMapping(value = "/categories/add", method = RequestMethod.POST)
     public ResponseEntity addCategory(@RequestHeader("token") String token, @RequestBody Category category) {
         User user = TokenAuth.getUserByToken(token);
@@ -124,6 +148,9 @@ public class RSSFeedController {
         return new ResponseEntity(new Category("Tech", new ArrayList(), new Long(42)), HttpStatus.OK);
     }
 
+    /*
+        Update a category.
+     */
     @RequestMapping(value = "/categories/update", method = RequestMethod.PUT)
     public ResponseEntity updateCategory(@RequestHeader("token") String token, @RequestBody Category category) {
         User user = TokenAuth.getUserByToken(token);
@@ -143,6 +170,9 @@ public class RSSFeedController {
         return new ResponseEntity(new Category(category.getTitle(), new ArrayList(), category.getId()), HttpStatus.OK);
     }
 
+    /*
+     Delete a category.
+     */
     @RequestMapping(value = "/categories/delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity deleteCategory(@RequestHeader("token") String token, @PathVariable Long id) {
         User user = TokenAuth.getUserByToken(token);
@@ -159,6 +189,9 @@ public class RSSFeedController {
         return ResponseEntity.ok(null);
     }
 
+    /*
+     List all favorites feeds.
+     */
     @RequestMapping(value = "/favorites", method = RequestMethod.GET)
     public ResponseEntity getFavorites(@RequestHeader("token") String token) {
         User user = TokenAuth.getUserByToken(token);
@@ -171,6 +204,9 @@ public class RSSFeedController {
         return new ResponseEntity(categories, HttpStatus.OK);
     }
 
+    /*
+     Add a feed in favorites.
+     */
     @RequestMapping(value = "/favorites/add", method = RequestMethod.POST)
     public ResponseEntity addFavorites(@RequestHeader("token") String token, @RequestBody RSSFeed rssFeed) {
         User user = TokenAuth.getUserByToken(token);
@@ -187,6 +223,9 @@ public class RSSFeedController {
         return ResponseEntity.ok(null);
     }
 
+    /*
+     Delete a feed in favorites.
+     */
     @RequestMapping(value = "/favorites/delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity deleteFavorite(@RequestHeader("token") String token, @PathVariable("id") Long id) {
         User user = TokenAuth.getUserByToken(token);
