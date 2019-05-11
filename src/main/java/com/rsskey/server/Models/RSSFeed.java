@@ -85,6 +85,15 @@ public class RSSFeed implements IModel<RSSFeed>{
                 '}';
     }
 
+    public boolean equals(RSSFeed other) {
+        return (this.link.equals(other.link) &&
+                this.title.equals(other.title) &&
+                this.language.equals(other.language) &&
+                this.copyright.equals(other.copyright) &&
+                this.description.equals(other.description) &&
+                this.pubDate.equals(other.description));
+    }
+
     @Override
     public RSSFeed map(ResultSet resultSet) throws SQLException {
         this.setTitle(resultSet.getString("Title"));

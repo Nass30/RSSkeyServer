@@ -91,6 +91,31 @@ public class RSSFeedItem implements IModel<RSSFeedItem> {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        RSSFeedItem other = (RSSFeedItem)obj;
+        if (other == null) {
+            System.out.println("Can't cast other to compare");
+            return false;
+        }
+        return (this.guid.equals(other.guid) &&
+                this.link.equals(other.link));
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.guid != null) {
+            return this.guid.hashCode();
+        } else if (this.link != null) {
+            return this.link.hashCode();
+        } else if (this.description != null) {
+            return this.description.hashCode();
+        } else {
+            return this.author.hashCode();
+        }
+    }
+
+    //    public RSSFeedItem(String guid, String title, String description, String link, String author, Long ID, Long rssID) {
+    @Override
     public RSSFeedItem map(ResultSet resultSet) throws SQLException {
         this.setRssID( resultSet.getLong( "RssID" ) );
         this.setGuid( resultSet.getString( "Guid" ) );
@@ -98,6 +123,7 @@ public class RSSFeedItem implements IModel<RSSFeedItem> {
         this.setLink( resultSet.getString( "Link" ) );
         this.setDescription( resultSet.getString( "Description" ) );
         this.setID( resultSet.getLong( "RssItemID" ) );
-        return this;
+        this.setTitle(resultSet.getString("Title"));
+        return new RSSFeedItem(this.guid, this.title, this.description, this.link, this.author, this.getID(), this.rssID);
     }
 }

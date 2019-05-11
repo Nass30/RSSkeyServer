@@ -73,7 +73,7 @@ public class UserRepository extends ARepository<User> {
 
         try {
             findedUser = (User)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, user ,login, password);
-            System.out.print(user.toString());
+            System.out.println(user.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -88,7 +88,7 @@ public class UserRepository extends ARepository<User> {
 
         try {
             findedUser = (User)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, user , token);
-            System.out.print(user.toString());
+            System.out.println(user.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }

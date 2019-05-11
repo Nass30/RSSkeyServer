@@ -42,7 +42,7 @@ public class RssFeedItemRepository extends ARepository<RSSFeedItem> {
     public Boolean delete(Long ID) throws DAOException {
         Boolean toreturn = false;
         ArrayList<Long>  result = null;
-        String query = "DELETE FROM public.rssfeed WHERE \"RssID\"=?";
+        String query = "DELETE FROM public.rssfeeditem WHERE \"RssItemID\"=?";
 
         try {
             result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false, null, ID);
@@ -54,11 +54,27 @@ public class RssFeedItemRepository extends ARepository<RSSFeedItem> {
         return toreturn;
     }
 
+    public List<RSSFeedItem> getRSSFeedItems(Long id) {
+        RSSFeedItem feed = new RSSFeedItem();
+        ArrayList<RSSFeedItem> feeds = new ArrayList<RSSFeedItem>();
+        String query = "SELECT * FROM public.rssfeeditem where \"RssID\"=?";
+
+        try {
+            System.out.println("Find RssFeedItems By RSSID" + id);
+            feeds = (ArrayList<RSSFeedItem>)(ArrayList<?>) SQLHelper.executeQuery(this.daoFactory.getConnection(), query, feed ,id);
+            System.out.println("Found " + feeds.size() +" items");
+        } catch (Exception e) {
+            System.out.println("Error :");
+            e.printStackTrace();
+        }
+        return feeds;
+    }
+
     @Override
     public RSSFeedItem findbyID(Long ID) throws DAOException {
         RSSFeedItem feed = new RSSFeedItem();
         RSSFeedItem newFeed = null;
-        String query = "SELECT * FROM public.rssfeed where \"RssItemID\"=?";
+        String query = "SELECT * FROM public.rssfeeditem where \"RssItemID\"=?";
 
         try {
             System.out.println("Find RssFeedItem By ID");

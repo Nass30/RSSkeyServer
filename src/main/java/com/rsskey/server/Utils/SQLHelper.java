@@ -102,8 +102,7 @@ public class SQLHelper {
             resultSet = preparedStatement.executeQuery();
             /* Parcours de la ligne de données de l'éventuel ResulSet retourné */
             while ( resultSet.next() ) {
-                DBModel.add(model.map( resultSet ));
-                System.out.println(" !!");
+                DBModel.add(model.map(resultSet));
                 System.out.println(model.toString());
             }
         } catch ( SQLException e ) {
@@ -127,8 +126,8 @@ public class SQLHelper {
             /* Parcours de la ligne de données de l'éventuel ResulSet retourné */
             if ( resultSet.next() ) {
                 DBModel = model.map( resultSet );
-                System.out.print("TEST SQL EXECUTION !!");
-                System.out.print(model.toString());
+                System.out.println("TEST SQL EXECUTION !!");
+                System.out.println(model.toString());
             }
         } catch ( SQLException e ) {
             throw new DAOException( e );
@@ -142,7 +141,7 @@ public class SQLHelper {
      * avec la requête SQL et les objets donnés.
      */
     public static PreparedStatement initialisationRequetePreparee( Connection connexion, String sql, boolean returnGeneratedKeys, Object... objets ) throws SQLException {
-        System.out.print("passe par la !" + objets.length);
+        System.out.println("passe par la !" + objets.length);
         PreparedStatement preparedStatement = connexion.prepareStatement( sql, ((returnGeneratedKeys == true) ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS) );
         for ( int i = 0; i < objets.length; i++ ) {
             preparedStatement.setObject( i + 1, objets[i] );

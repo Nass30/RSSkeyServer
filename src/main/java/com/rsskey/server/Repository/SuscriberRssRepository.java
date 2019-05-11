@@ -51,11 +51,24 @@ public class SuscriberRssRepository extends ARepository<SuscriberRss> {
         return toreturn;
     }
 
+    public SuscriberRss findByCoupleID(Long userID, Long rssID) {
+        SuscriberRss suscriberRss = new SuscriberRss();
+        String query = "SELECT * FROM public.suscriberrss where \"RssID\"=? and \"UserID\"=?";
+        try {
+            ArrayList<SuscriberRss> result = (ArrayList<SuscriberRss>)(ArrayList<?>) SQLHelper.executeQuery(this.daoFactory.getConnection(),query, suscriberRss, rssID, userID);
+            if (result.size() > 0)
+                return result.get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     public SuscriberRss findbyID(Long ID) throws DAOException {
         SuscriberRss feed = new SuscriberRss();
         SuscriberRss newFeed = null;
-        String query = "SELECT * FROM public.users where \"loginID \"=?";
+        String query = "SELECT * FROM public.suscriberrss where \"SuscriberID\"=?";
 
         try {
             newFeed = (SuscriberRss)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, feed ,ID);

@@ -4,10 +4,15 @@ import com.rsskey.server.Controllers.APIError;
 import com.rsskey.server.DAO.Exception.DAOFactory;
 import com.rsskey.server.Models.Category;
 import com.rsskey.server.Models.RSSFeed;
+import com.rsskey.server.Models.SuscriberRss;
 import com.rsskey.server.Models.User;
 import com.rsskey.server.RSSParser.RSSFeedParser;
+import com.rsskey.server.Repository.RssFeedItemRepository;
 import com.rsskey.server.Repository.RssFeedRepository;
+import com.rsskey.server.Repository.SuscriberRssRepository;
 import com.rsskey.server.Utils.TokenAuth;
+import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.dao.support.DaoSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,12 +65,31 @@ public class RSSFeedController {
         }
         try {
             RssFeedRepository repo = DAOFactory.getInstance().getRssFeedRepository();
-
+            RssFeedItemRepository itemsrepo = DAOFactory.getInstance().getRssFeedItemRepository();
             RSSFeedParser rssFeedParser = new RSSFeedParser(url.url);
             RSSFeed rssFeed = rssFeedParser.readFeed();
-            RSSFeed result = DAOFactory.getInstance().getRssFeedRepository().add(rssFeed);
-            System.out.println("feeds/user/add : " + result);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            if (rssFeed.getLink() == null || !EmailValidator.getInstance().isValid(rssFeed.getLink())) {
+                rssFeed.setLink(url.url);
+            }
+            RSSFeed dataFeed = repo.findByURL(url.url);
+            SuscriberRssRepository suscriberRssRepository = DAOFactory.getInstance().getSuscriberRepository();
+            if (dataFeed == null) {
+                System.out.println("New feed ! Welcome my man !");
+                dataFeed = repo.add(rssFeed);
+                suscriberRssRepository.add(new SuscriberRss(null, user.getID(), dataFeed.getID()));
+            } else {
+                System.out.println("Old feed ! Update it !");
+                SuscriberRss suscriberRss = suscriberRssRepository.findByCoupleID(user.getID(), dataFeed.getID());
+                if (suscriberRss != null) {
+                    return new ResponseEntity(new APIError(HttpStatus.FORBIDDEN, "RssFeed already added to user's feeds."), HttpStatus.FORBIDDEN);
+                }
+                suscriberRssRepository.add(new SuscriberRss(null, user.getID(), dataFeed.getID()));
+                dataFeed.items = itemsrepo .getRSSFeedItems(dataFeed.getID());
+                dataFeed = repo.update(dataFeed, rssFeed);
+            }
+
+            System.out.println("feeds/user/add : " + dataFeed);
+            return new ResponseEntity<>(dataFeed, HttpStatus.OK);
         }
         catch(Exception e) {
             return new ResponseEntity<>(new APIError(HttpStatus.BAD_REQUEST, e), HttpStatus.BAD_REQUEST);

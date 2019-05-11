@@ -93,40 +93,45 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
         return newFeed;
     }*/
 
-    public RSSFeed update(RSSFeed model) {
+    @Override
+    public RSSFeed update(RSSFeed model) throws DAOException {
+        return null;
+    }
+
+    public RSSFeed update(RSSFeed oldModel, RSSFeed model) {
         RSSFeed updatedModel = null;
-
+        model.setID(oldModel.getID());
         try {
-            /*Statement state = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-
-            String query = "UPDATE public.users SET \"Title\"=?, \"Link\"=?, \"Description\"=?, \"Language\"=?, \"Copyright\"=?, \"Pubdate\"=? WHERE \"RssID\"=?";
-            //On crée l'objet avec la requête en paramètre
-            PreparedStatement prepare = this.connect.prepareStatement(query);
-
-            prepare.setString(1, model.getTitle());
-            prepare.setString(2, model.getLink());
-            prepare.setString(3, model.getDescription());
-            prepare.setString(4, model.getLanguage());
-            prepare.setString(5, model.getCopyright());
-            Date date= new Date();
-
-            long time = date.getTime();
-            System.out.println("Time in Milliseconds: " + time);
-
-            Timestamp ts = new Timestamp(time);
-
-            prepare.setTimestamp(6, ts);
-            prepare.setInt(7, model.getID());
-
-            ResultSet res =  prepare.executeQuery();
-            while(res.next()){
-                updatedModel = this.findbyID(model.getID());
+            String query = "UPDATE public.rssfeed SET \"Title\"=?, \"Link\"=?, \"Description\"=?, \"Language\"=?, \"Copyright\"=?, \"Pubdate\"=? WHERE \"RssID\"=?";
+            SQLHelper.executeNonQuery(
+                    this.daoFactory.getConnection(),
+                    query,
+                    false,
+                    null,
+                    model.getTitle(),
+                    model.getLink(),
+                    model.getDescription(),
+                    model.getLanguage(),
+                    model.getCopyright(),
+                    model.getPubDate(),
+                    model.getID()
+            );
+            updatedModel = findbyID(model.getID());
+            Set<RSSFeedItem> ad = new HashSet<RSSFeedItem>(model.items);
+            Set<RSSFeedItem> bd = new HashSet<RSSFeedItem>(oldModel.items);
+            Set<RSSFeedItem> updateList = new HashSet<RSSFeedItem>();
+            updateList.addAll(ad);
+            updateList.addAll(bd);
+            updatedModel.items.addAll(updateList);
+            ad.removeAll(bd);
+            Iterator<RSSFeedItem> itr = ad.iterator();
+            RssFeedItemRepository itemsrepo = DAOFactory.getInstance().getRssFeedItemRepository();
+            while (itr.hasNext()) {
+                RSSFeedItem item = itr.next();
+                System.out.println("Item added : GUID: " + item.getGuid() + "Link :" + item.getLink());
+                item.setRssID(oldModel.getID());
+                itemsrepo.add(item);
             }
-
-            res.close();
-            prepare.close();
-            state.close();*/
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -149,5 +154,18 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
             e.printStackTrace();
         }
         return rssFeeds;
+    }
+
+    public RSSFeed findByURL(String url) {
+        RSSFeed feed = new RSSFeed();
+        RSSFeed newFeed = null;
+        String query = "SELECT * FROM public.rssfeed where \"Link\"=?";
+        System.out.println("Find RssFeed by URL" + url);
+        try {
+            newFeed = (RSSFeed)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, feed ,url);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return newFeed;
     }
 }
