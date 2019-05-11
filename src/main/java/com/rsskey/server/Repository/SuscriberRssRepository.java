@@ -51,6 +51,21 @@ public class SuscriberRssRepository extends ARepository<SuscriberRss> {
         return toreturn;
     }
 
+    public Boolean deleteByCouple(Long userID, Long rssFeedID) throws DAOException {
+        Boolean toreturn = false;
+        ArrayList<Long>  result = null;
+        String query = "DELETE FROM public.suscriberrss WHERE \"UserID\"=? AND \"RssID\"=?";
+
+        try {
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(), query,false, null, userID, rssFeedID);
+            if (result != null && result.size() > 0)
+                toreturn = true;
+        } catch (Exception e) {
+            System.out.println("[DELETE SUSCRIBER FAILED]");
+        }
+        return toreturn;
+    }
+
     public SuscriberRss findByCoupleID(Long userID, Long rssID) {
         SuscriberRss suscriberRss = new SuscriberRss();
         String query = "SELECT * FROM public.suscriberrss where \"RssID\"=? and \"UserID\"=?";
@@ -79,68 +94,23 @@ public class SuscriberRssRepository extends ARepository<SuscriberRss> {
     }
 
     public SuscriberRss update(SuscriberRss model) {
-        SuscriberRss updatedModel = null;
-
-        try {
-            /*Statement state = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-
-            String query = "UPDATE public.users SET \"Title\"=?, \"Link\"=?, \"Description\"=?, \"Language\"=?, \"Copyright\"=?, \"Pubdate\"=? WHERE \"RssID\"=?";
-            //On crée l'objet avec la requête en paramètre
-            PreparedStatement prepare = this.connect.prepareStatement(query);
-
-            prepare.setString(1, model.getTitle());
-            prepare.setString(2, model.getLink());
-            prepare.setString(3, model.getDescription());
-            prepare.setString(4, model.getLanguage());
-            prepare.setString(5, model.getCopyright());
-            Date date= new Date();
-
-            long time = date.getTime();
-            System.out.println("Time in Milliseconds: " + time);
-
-            Timestamp ts = new Timestamp(time);
-
-            prepare.setTimestamp(6, ts);
-            prepare.setInt(7, model.getID());
-
-            ResultSet res =  prepare.executeQuery();
-            while(res.next()){
-                updatedModel = this.findbyID(model.getID());
-            }
-
-            res.close();
-            prepare.close();
-            state.close();*/
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return updatedModel;
+        return null;
     }
 
     public ArrayList<Long> getRSSFeed(long IDUser)
     {
-        RSSFeed feed = new RSSFeed();
-        RSSFeed newFeed = null;
-        String query = "SELECT RssID FROM public.suscriberrss where \"UserID\"=?";
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        ArrayList<Long> RssIDS = new ArrayList<>();
-        Connection connexion = null;
-        try {
-            connexion = this.daoFactory.getConnection();
-            preparedStatement = SQLHelper.initialisationRequetePreparee(connexion , query,false,IDUser);
-            resultSet = preparedStatement.executeQuery();
-            /* Parcours de la ligne de données de l'éventuel ResulSet retourné */
-            while ( resultSet.next() ) {
-                RssIDS.add(resultSet.getLong("RssID"));
-            }
+        SuscriberRss suscriberRss = new SuscriberRss();
+        String query = "SELECT * FROM public.suscriberrss where \"UserID\"=?";
+        ArrayList<Long> feedsID = new ArrayList<Long>();
 
-        } catch ( SQLException e ) {
-            throw new DAOException( e );
-        } finally {
-            SQLHelper.closeCleanning( resultSet, preparedStatement, connexion);
+        try {
+            System.out.println("Find RssFeed By RSSID" + IDUser);
+            feedsID = (ArrayList<Long>)(ArrayList<?>) SQLHelper.executeQuery(this.daoFactory.getConnection(), query, suscriberRss, IDUser);
+            System.out.println("Found " + feedsID.size() +" feeds");
+        } catch (Exception e) {
+            System.out.println("Error :");
+            e.printStackTrace();
         }
-        return RssIDS;
+        return feedsID;
     }
 }

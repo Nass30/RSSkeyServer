@@ -108,6 +108,8 @@ public class RSSFeedController {
         if (id == null) {
             return ResponseEntity.badRequest().body(null);
         }
+        SuscriberRssRepository suscriberRssRepository = DAOFactory.getInstance().getSuscriberRepository();
+        suscriberRssRepository.deleteByCouple(user.getID(), id);
         return ResponseEntity.ok(null);
     }
 
@@ -115,15 +117,28 @@ public class RSSFeedController {
         Get a feed from it's id.
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity getFeed(Long id, @RequestHeader("token") String token) {
+    public ResponseEntity getFeed(@PathVariable Long id, @RequestHeader("token") String token) {
         User user = TokenAuth.getUserByToken(token);
         if (user == null) {
             return APIError.unauthorizedResponse();
         }
         if (id == null) {
+            System.out.println("id null");
             return ResponseEntity.badRequest().body(null);
         }
-        return ResponseEntity.ok(null);
+
+        RssFeedRepository repo = DAOFactory.getInstance().getRssFeedRepository();
+        RSSFeed feed = repo.findbyID(id);
+        if (feed == null) {
+            return new ResponseEntity(new APIError(HttpStatus.NOT_FOUND, "Feed not found for id " + id), HttpStatus.NOT_FOUND);
+        }
+        RSSFeedParser rssFeedParser = new RSSFeedParser(feed.getLink());
+        RSSFeed rssFeed = rssFeedParser.readFeed();
+        RssFeedItemRepository itemsrepo = DAOFactory.getInstance().getRssFeedItemRepository();
+        feed.items = itemsrepo .getRSSFeedItems(feed.getID());
+        feed = repo.update(feed, rssFeed);
+
+        return new ResponseEntity<>(feed, HttpStatus.OK);
     }
 
     /*
