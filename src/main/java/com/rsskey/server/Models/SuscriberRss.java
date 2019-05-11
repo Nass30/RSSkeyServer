@@ -53,6 +53,6 @@ public class SuscriberRss  implements IModel<SuscriberRss>{
         this.setID( resultSet.getLong( "SuscriberID" ) );
         this.setRssID( resultSet.getLong( "RssID" ) );
         this.setUserID( resultSet.getLong( "UserID" ) );
-        return this;
+        return new SuscriberRss(this.ID, this.userID, this.rssID);
     }
 }

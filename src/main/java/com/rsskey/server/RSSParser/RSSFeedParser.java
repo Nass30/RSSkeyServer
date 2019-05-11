@@ -27,9 +27,11 @@ public class RSSFeedParser {
     static final String GUID = "guid";
 
     final URL url;
+    final String feedURLString;
 
     public RSSFeedParser(String feedUrl) {
         try {
+            this.feedURLString = feedUrl;
             this.url = new URL(feedUrl);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
@@ -66,7 +68,7 @@ public class RSSFeedParser {
                             if (isFeedHeader) {
                                 isFeedHeader = false;
                                 feed = new RSSFeed(title, link, description, language,
-                                        copyright, pubdate);
+                                        copyright, pubdate, this.feedURLString);
                             }
                             event = eventReader.nextEvent();
                             break;

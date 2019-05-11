@@ -100,12 +100,16 @@ public class SuscriberRssRepository extends ARepository<SuscriberRss> {
     public ArrayList<Long> getRSSFeed(long IDUser)
     {
         SuscriberRss suscriberRss = new SuscriberRss();
+        ArrayList<SuscriberRss> suscriberRssArrayList = new ArrayList<SuscriberRss>();
         String query = "SELECT * FROM public.suscriberrss where \"UserID\"=?";
         ArrayList<Long> feedsID = new ArrayList<Long>();
 
         try {
-            System.out.println("Find RssFeed By RSSID" + IDUser);
-            feedsID = (ArrayList<Long>)(ArrayList<?>) SQLHelper.executeQuery(this.daoFactory.getConnection(), query, suscriberRss, IDUser);
+            System.out.println("Find RssFeed By UserID" + IDUser);
+            suscriberRssArrayList = (ArrayList<SuscriberRss>)(ArrayList<?>) SQLHelper.executeQuery(this.daoFactory.getConnection(), query, suscriberRss, IDUser);
+            for (SuscriberRss suscriberRss1: suscriberRssArrayList) {
+                feedsID.add(suscriberRss1.getRssID());
+            }
             System.out.println("Found " + feedsID.size() +" feeds");
         } catch (Exception e) {
             System.out.println("Error :");

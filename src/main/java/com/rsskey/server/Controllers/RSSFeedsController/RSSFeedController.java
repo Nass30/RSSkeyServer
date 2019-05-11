@@ -34,9 +34,9 @@ public class RSSFeedController {
         if (user == null) {
             return APIError.unauthorizedResponse();
         }
-        RSSFeed feed = new RSSFeed("Title", "link", "description", "language", "copyright", "date", new Long(01));
-        List array = new ArrayList<RSSFeed>();
-        array.add(feed);
+        RssFeedRepository rssFeedRepository = DAOFactory.getInstance().getRssFeedRepository();
+        List<RSSFeed> array = rssFeedRepository.getAllFeeds();
+
         return new ResponseEntity(array, HttpStatus.OK);
     }
 
@@ -50,7 +50,7 @@ public class RSSFeedController {
         if (user == null) {
             return APIError.unauthorizedResponse();
         }
-        array = DAOFactory.getInstance().getRssFeedRepository().getRSSFeed(user.getID());
+        array = DAOFactory.getInstance().getRssFeedRepository().getRSSFeeds(user.getID());
         return new ResponseEntity(array, HttpStatus.OK);
     }
 
@@ -132,10 +132,11 @@ public class RSSFeedController {
         if (feed == null) {
             return new ResponseEntity(new APIError(HttpStatus.NOT_FOUND, "Feed not found for id " + id), HttpStatus.NOT_FOUND);
         }
-        RSSFeedParser rssFeedParser = new RSSFeedParser(feed.getLink());
+        RSSFeedParser rssFeedParser = new RSSFeedParser(feed.getRssURL());
         RSSFeed rssFeed = rssFeedParser.readFeed();
         RssFeedItemRepository itemsrepo = DAOFactory.getInstance().getRssFeedItemRepository();
-        feed.items = itemsrepo .getRSSFeedItems(feed.getID());
+        feed.items = itemsrepo.getRSSFeedItems(feed.getID());
+        System.out.println(feed.items);
         feed = repo.update(feed, rssFeed);
 
         return new ResponseEntity<>(feed, HttpStatus.OK);

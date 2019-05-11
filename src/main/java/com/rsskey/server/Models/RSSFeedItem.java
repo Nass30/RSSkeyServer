@@ -114,7 +114,6 @@ public class RSSFeedItem implements IModel<RSSFeedItem> {
         }
     }
 
-    //    public RSSFeedItem(String guid, String title, String description, String link, String author, Long ID, Long rssID) {
     @Override
     public RSSFeedItem map(ResultSet resultSet) throws SQLException {
         this.setRssID( resultSet.getLong( "RssID" ) );
@@ -122,8 +121,13 @@ public class RSSFeedItem implements IModel<RSSFeedItem> {
         this.setAuthor( resultSet.getString( "Author" ) );
         this.setLink( resultSet.getString( "Link" ) );
         this.setDescription( resultSet.getString( "Description" ) );
-        this.setID( resultSet.getLong( "RssItemID" ) );
+        this.setID( resultSet.getLong( "RssItemID" ));
         this.setTitle(resultSet.getString("Title"));
-        return new RSSFeedItem(this.guid, this.title, this.description, this.link, this.author, this.getID(), this.rssID);
+        System.out.println("MAP");
+        RSSFeedItem res = new RSSFeedItem(this.guid, this.title, this.description, this.link, this.author, this.ID, this.rssID);
+        System.out.println(this);
+        System.out.println();
+
+        return res;
     }
 }

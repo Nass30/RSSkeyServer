@@ -13,6 +13,7 @@ public class RSSFeed implements IModel<RSSFeed>{
     private  String language;
     private  String copyright;
     private  String pubDate;
+    private  String rssURL;
     private  Long ID;
 
     public  List<RSSFeedItem> items = new ArrayList<RSSFeedItem>();
@@ -26,19 +27,21 @@ public class RSSFeed implements IModel<RSSFeed>{
         this.copyright = null;
         this.pubDate = null;
         this.ID = null;
+        this.rssURL = null;
 
     }
 
-    public RSSFeed(String title, String link, String description, String language, String copyright, String pubDate) {
+    public RSSFeed(String title, String link, String description, String language, String copyright, String pubDate, String rssURL) {
         this.title = title;
         this.link = link;
         this.description = description;
         this.language = language;
         this.copyright = copyright;
         this.pubDate = pubDate;
+        this.rssURL = rssURL;
     }
 
-    public RSSFeed(String title, String link, String description, String language, String copyright, String pubDate, Long ID) {
+    public RSSFeed(String title, String link, String description, String language, String copyright, String pubDate, Long ID, String rssURL) {
         this.title = title;
         this.link = link;
         this.description = description;
@@ -46,6 +49,7 @@ public class RSSFeed implements IModel<RSSFeed>{
         this.copyright = copyright;
         this.pubDate = pubDate;
         this.ID = ID;
+        this.rssURL = rssURL;
     }
 
     public Long getID() {
@@ -73,6 +77,14 @@ public class RSSFeed implements IModel<RSSFeed>{
 
     public List<RSSFeedItem> getItems() {  return items;  }
 
+    public String getRssURL() {
+        return rssURL;
+    }
+
+    public void setRssURL(String rssURL) {
+        this.rssURL = rssURL;
+    }
+
     @Override
     public String toString() {
         return "RSSFlux{" +
@@ -86,8 +98,9 @@ public class RSSFeed implements IModel<RSSFeed>{
     }
 
     public boolean equals(RSSFeed other) {
-        return (this.link.equals(other.link) &&
+        return (this.rssURL.equals(other.rssURL) &&
                 this.title.equals(other.title) &&
+                this.link.equals(other.rssURL) &&
                 this.language.equals(other.language) &&
                 this.copyright.equals(other.copyright) &&
                 this.description.equals(other.description) &&
@@ -103,6 +116,7 @@ public class RSSFeed implements IModel<RSSFeed>{
         this.setPubDate(resultSet.getString("Pubdate"));
         this.setLanguage(resultSet.getString("Language"));
         this.setLink(resultSet.getString("Link"));
-        return this;
+        this.setRssURL(resultSet.getString("rssurl"));
+        return new RSSFeed(this.title, this.link, this.description, this.language, this.copyright, this.pubDate, this.getID(), this.rssURL);
     }
 }

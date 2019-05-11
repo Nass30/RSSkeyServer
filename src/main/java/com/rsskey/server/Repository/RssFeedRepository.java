@@ -22,7 +22,7 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
     }
 
     public RSSFeed add(RSSFeed model) {
-        String query = "INSERT INTO public.rssfeed(\"Title\", \"Link\", \"Description\", \"Language\", \"Copyright\", \"Pubdate\") VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO public.rssfeed(\"Title\", \"Link\", \"Description\", \"Language\", \"Copyright\", \"Pubdate\", rssurl) VALUES (?, ?, ?, ?, ?, ?, ?)";
         RSSFeed DBModel = null;
         ArrayList<Long> result = null;
         RssFeedItemRepository repoRssItem = DAOFactory.getInstance().getRssFeedItemRepository();
@@ -30,7 +30,7 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
         try {
             Timestamp ts = new Timestamp(new Date().getTime());
 
-            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, "RssID", model.getTitle(), model.getLink(), model.getDescription(), model.getLanguage(), model.getCopyright(), ts);
+            result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, "RssID", model.getTitle(), model.getLink(), model.getDescription(), model.getLanguage(), model.getCopyright(), model.getPubDate(), model.getRssURL());
             System.out.println("Result of the query " + result);
             if (result != null && result.size() > 0 && (DBModel = this.findbyID(result.get(0))) != null) {
                 System.out.println("Result of the DBModel " + DBModel);
@@ -80,18 +80,18 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
         return newFeed;
     }
 
-    /*public List<RSSFeed> getAllFeeds() throws DAOException {
+    public List<RSSFeed> getAllFeeds() throws DAOException {
         RSSFeed feed = new RSSFeed();
-        RSSFeed newFeed = null;
-        String query = "SELECT * FROM public.rssfeed where \"RssID\"=?";
+        List<RSSFeed> feeds = new ArrayList<RSSFeed>();
+        String query = "SELECT * FROM public.rssfeed";
 
         try {
-            newFeed = (RSSFeed)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, feed ,ID);
+            feeds = (ArrayList<RSSFeed>)(ArrayList<?>)SQLHelper.executeQuery(this.daoFactory.getConnection(),query, feed);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return newFeed;
-    }*/
+        return feeds;
+    }
 
     @Override
     public RSSFeed update(RSSFeed model) throws DAOException {
@@ -120,8 +120,8 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
             Set<RSSFeedItem> ad = new HashSet<RSSFeedItem>(model.items);
             Set<RSSFeedItem> bd = new HashSet<RSSFeedItem>(oldModel.items);
             Set<RSSFeedItem> updateList = new HashSet<RSSFeedItem>();
-            updateList.addAll(ad);
             updateList.addAll(bd);
+            updateList.addAll(ad);
             updatedModel.items.addAll(updateList);
             ad.removeAll(bd);
             Iterator<RSSFeedItem> itr = ad.iterator();
@@ -138,7 +138,7 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
         return updatedModel;
     }
 
-    public List<RSSFeed> getRSSFeed(long IDUser)
+    public List<RSSFeed> getRSSFeeds(long IDUser)
     {
         ArrayList<Long> RssIDS;
         ArrayList<RSSFeed> rssFeeds = new ArrayList<>();
@@ -159,8 +159,8 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
     public RSSFeed findByURL(String url) {
         RSSFeed feed = new RSSFeed();
         RSSFeed newFeed = null;
-        String query = "SELECT * FROM public.rssfeed where \"Link\"=?";
-        System.out.println("Find RssFeed by URL" + url);
+        String query = "SELECT * FROM public.rssfeed where rssurl=?";
+        System.out.println("Find RssFeed by URL " + url);
         try {
             newFeed = (RSSFeed)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, feed ,url);
         } catch (Exception e) {
