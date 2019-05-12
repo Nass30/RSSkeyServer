@@ -2,10 +2,7 @@ package com.rsskey.server.Controllers.RSSFeedsController;
 
 import com.rsskey.server.Controllers.APIError;
 import com.rsskey.server.DAO.Exception.DAOFactory;
-import com.rsskey.server.Models.Category;
-import com.rsskey.server.Models.RSSFeed;
-import com.rsskey.server.Models.SuscriberRss;
-import com.rsskey.server.Models.User;
+import com.rsskey.server.Models.*;
 import com.rsskey.server.RSSParser.RSSFeedParser;
 import com.rsskey.server.Repository.RssFeedItemRepository;
 import com.rsskey.server.Repository.RssFeedRepository;
@@ -24,6 +21,17 @@ import java.lang.Long;
 @RestController
 @RequestMapping(path="/feeds")
 public class RSSFeedController {
+
+    /*
+        Random articles from database.
+     */
+    @RequestMapping(value = "/randompicker", method = RequestMethod.GET)
+    public ResponseEntity getRandomArticles() {
+        RssFeedItemRepository rssFeedItemRepository = DAOFactory.getInstance().getRssFeedItemRepository();
+        List<RSSFeedItem> array = rssFeedItemRepository.getRandomItems();
+
+        return new ResponseEntity(array, HttpStatus.OK);
+    }
 
     /*
      List all feeds.
@@ -99,7 +107,7 @@ public class RSSFeedController {
     /*
      Delete a feed in user's data.
      */
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/user/delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity deleteFeed(@PathVariable("id") Long id, @RequestHeader("token") String token) {
         User user = TokenAuth.getUserByToken(token);
         if (user == null) {

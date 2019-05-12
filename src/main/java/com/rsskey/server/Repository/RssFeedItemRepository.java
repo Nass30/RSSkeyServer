@@ -54,6 +54,24 @@ public class RssFeedItemRepository extends ARepository<RSSFeedItem> {
         return toreturn;
     }
 
+    public List<RSSFeedItem> getRandomItems() {
+        RSSFeedItem feed = new RSSFeedItem();
+        ArrayList<RSSFeedItem> feeds = new ArrayList<RSSFeedItem>();
+        String query = "SELECT * FROM public.rssfeeditem TABLESAMPLE SYSTEM_ROWS(15);";
+
+        try {
+            System.out.println("Find random RSSItems");
+            feeds = (ArrayList<RSSFeedItem>)(ArrayList<?>) SQLHelper.executeQuery(this.daoFactory.getConnection(), query, feed);
+            System.out.println("Found " + feeds.size() +" items");
+        } catch (Exception e) {
+            System.out.println("Error :");
+            e.printStackTrace();
+        }
+        System.out.println("get Randoms items result");
+        System.out.println(feeds);
+        return feeds;
+    }
+
     public List<RSSFeedItem> getRSSFeedItems(Long id) {
         RSSFeedItem feed = new RSSFeedItem();
         ArrayList<RSSFeedItem> feeds = new ArrayList<RSSFeedItem>();
