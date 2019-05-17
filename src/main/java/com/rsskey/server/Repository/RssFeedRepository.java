@@ -3,10 +3,9 @@ package com.rsskey.server.Repository;
 import com.rsskey.server.DAO.Exception.DAOException;
 import com.rsskey.server.DAO.Exception.DAOFactory;
 import com.rsskey.server.DatabaseUtils.DbConnect;
-import com.rsskey.server.Models.RSSFeed;
-import com.rsskey.server.Models.RSSFeedItem;
-import com.rsskey.server.Models.User;
+import com.rsskey.server.Models.*;
 import com.rsskey.server.Utils.SQLHelper;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.dao.support.DaoSupport;
 
 import java.sql.PreparedStatement;
@@ -14,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.function.Function;
 
 public class RssFeedRepository extends ARepository<RSSFeed> {
 
@@ -161,6 +161,7 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
         RSSFeed newFeed = null;
         String query = "SELECT * FROM public.rssfeed where rssurl=?";
         System.out.println("Find RssFeed by URL " + url);
+
         try {
             newFeed = (RSSFeed)SQLHelper.executeQuery(this.daoFactory.getConnection(),query,false, feed ,url);
         } catch (Exception e) {
@@ -168,4 +169,49 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
         }
         return newFeed;
     }
+
+    public Boolean addFavorite(Long IDUser, Long RssID) {
+
+        Boolean queryExecuted = true;
+        String query = "INSERT INTO public.FavorisFeeds(\"LoginID\", \"FeedID\") VALUES (?, ?)";
+
+        try {
+            SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false,null, IDUser , RssID);
+        } catch (Exception e) {
+            queryExecuted = false;
+            e.printStackTrace();
+        }
+        return queryExecuted;
+    }
+
+    public Boolean removeFavorite(Long IDUser, Long RssID) {
+
+        Boolean queryExecuted = true;
+        String query = "DELETE FROM public.FavorisFeeds where \"LoginID\"=? and \"FeedID\"=?";
+
+        try {
+            SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false,null, IDUser , RssID);
+        } catch (Exception e) {
+            queryExecuted = false;
+            e.printStackTrace();
+        }
+        return queryExecuted;
+    }
+
+    public List<RSSFeed> getFavoriteFeeds(Long IDUser)
+    {
+        String queryFavFeed = "SELECT * from public.\"rssfeed\" as rf , public.\"FavorisFeeds\" as ff WHERE rf.\"RssID\" = ff.\"FeedID\" and ff.\"LoginID\"=?";
+        RSSFeed feed = new RSSFeed();
+        ArrayList<RSSFeed> feeds = new ArrayList<>();
+
+
+        try {
+            feeds = (ArrayList<RSSFeed>)(ArrayList<?>)SQLHelper.executeQuery(this.daoFactory.getConnection(),queryFavFeed, feed);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return feeds;
+    }
+
 }

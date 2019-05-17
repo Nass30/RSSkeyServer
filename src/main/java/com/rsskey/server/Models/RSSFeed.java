@@ -18,6 +18,16 @@ public class RSSFeed implements IModel<RSSFeed>{
 
     public  List<RSSFeedItem> items = new ArrayList<RSSFeedItem>();
 
+    public RSSFeed(RSSFeed clone) {
+        this.title = clone.title;
+        this.link = clone.link;
+        this.description = clone.description;
+        this.language = clone.language;
+        this.copyright = clone.copyright;
+        this.pubDate = clone.pubDate;
+        this.ID = clone.ID;
+    }
+
     public RSSFeed()
     {
         this.title = null;
@@ -118,5 +128,10 @@ public class RSSFeed implements IModel<RSSFeed>{
         this.setLink(resultSet.getString("Link"));
         this.setRssURL(resultSet.getString("rssurl"));
         return new RSSFeed(this.title, this.link, this.description, this.language, this.copyright, this.pubDate, this.getID(), this.rssURL);
+    }
+
+    @Override
+    public RSSFeed clone() {
+        return new RSSFeed(this);
     }
 }

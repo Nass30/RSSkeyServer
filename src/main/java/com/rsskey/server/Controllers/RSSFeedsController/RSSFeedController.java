@@ -249,10 +249,9 @@ public class RSSFeedController {
         if (user == null) {
             return APIError.unauthorizedResponse();
         }
-        List<Category> categories = new ArrayList<Category>();
-        categories.add(new Category("Tech", new ArrayList(), new Long(32)));
-        categories.add(new Category("Food", new ArrayList(), new Long(33)));
-        return new ResponseEntity(categories, HttpStatus.OK);
+
+        RssFeedRepository repo = DAOFactory.getInstance().getRssFeedRepository();
+        return new ResponseEntity(repo.getFavoriteFeeds(user.getID()), HttpStatus.OK);
     }
 
     /*
@@ -271,7 +270,7 @@ public class RSSFeedController {
         if (repo.findbyID(rssFeed.getID()) == null) {
             return new ResponseEntity(new APIError(HttpStatus.BAD_REQUEST, "Unknown RssFeed Id "+ rssFeed.getID()), HttpStatus.BAD_REQUEST);
         }
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(repo.addFavorite(user.getID(),rssFeed.getID()));
     }
 
     /*
@@ -283,11 +282,11 @@ public class RSSFeedController {
         if (user == null) {
             return APIError.unauthorizedResponse();
         }
-        if (id == null) {
+        RssFeedRepository repo = DAOFactory.getInstance().getRssFeedRepository();
+        if (repo.findbyID(id) == null) {
             return new ResponseEntity(new APIError(HttpStatus.BAD_REQUEST, "Missing id of the RssFeed"), HttpStatus.BAD_REQUEST);
         }
-
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(repo.removeFavorite(user.getID(),id));
     }
 
 }

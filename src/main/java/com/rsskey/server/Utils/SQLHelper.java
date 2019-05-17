@@ -144,7 +144,18 @@ public class SQLHelper {
         System.out.println("passe par la !" + objets.length);
         PreparedStatement preparedStatement = connexion.prepareStatement( sql, ((returnGeneratedKeys == true) ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS) );
         for ( int i = 0; i < objets.length; i++ ) {
-            preparedStatement.setObject( i + 1, objets[i] );
+            if (objets[i] instanceof List) {
+                List paramsList = (List)objets[i];
+                i += 1;
+                int j = 0;
+
+                for (; j < paramsList.size(); j++) {
+                    preparedStatement.setObject(i + j, paramsList.get(j));
+                }
+                i += j;
+            } else {
+                preparedStatement.setObject(i + 1, objets[i]);
+            }
         }
         return preparedStatement;
     }
