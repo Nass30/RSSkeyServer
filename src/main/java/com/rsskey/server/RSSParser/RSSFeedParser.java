@@ -1,7 +1,19 @@
 package com.rsskey.server.RSSParser;
 
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.SyndFeedInput;
+import com.rometools.rome.io.XmlReader;
 import com.rsskey.server.Models.RSSFeed;
 import com.rsskey.server.Models.RSSFeedItem;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,75 +51,37 @@ public class RSSFeedParser {
     }
 
     public RSSFeed readFeed() {
-        RSSFeed feed = null;
-        try {
-            boolean isFeedHeader = true;
-            // Set header values intial to the empty string
-            String description = "";
-            String title = "";
-            String link = "";
-            String language = "";
-            String copyright = "";
-            String author = "";
-            String pubdate = "";
-            String guid = "";
-
-            // First create a new XMLInputFactory
-            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-            // Setup a new eventReader
-            InputStream in = read();
-            XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
-            // read the XML document
-            while (eventReader.hasNext()) {
-                XMLEvent event = eventReader.nextEvent();
-                if (event.isStartElement()) {
-                    String localPart = event.asStartElement().getName()
-                            .getLocalPart();
-                    switch (localPart) {
-                        case ITEM:
-                            if (isFeedHeader) {
-                                isFeedHeader = false;
-                                feed = new RSSFeed(title, link, description, language,
-                                        copyright, pubdate, this.feedURLString);
-                            }
-                            event = eventReader.nextEvent();
-                            break;
-                        case TITLE:
-                            title = getCharacterData(event, eventReader);
-                            break;
-                        case DESCRIPTION:
-                            description = getCharacterData(event, eventReader);
-                            break;
-                        case LINK:
-                            link = getCharacterData(event, eventReader);
-                            break;
-                        case GUID:
-                            guid = getCharacterData(event, eventReader);
-                            break;
-                        case LANGUAGE:
-                            language = getCharacterData(event, eventReader);
-                            break;
-                        case AUTHOR:
-                            author = getCharacterData(event, eventReader);
-                            break;
-                        case PUB_DATE:
-                            pubdate = getCharacterData(event, eventReader);
-                            break;
-                        case COPYRIGHT:
-                            copyright = getCharacterData(event, eventReader);
-                            break;
-                    }
-                } else if (event.isEndElement()) {
-                    if (event.asEndElement().getName().getLocalPart() == (ITEM)) {
-                        RSSFeedItem item = new RSSFeedItem(guid, title, description, link, author, null, null);
-                        feed.getItems().add(item);
-                        event = eventReader.nextEvent();
-                        continue;
-                    }
-                }
+        RestTemplate restTemplate = new RestTemplate();
+        SyndFeed syndFeed = restTemplate.execute(feedURLString, HttpMethod.GET, null, response -> {
+            SyndFeedInput input = new SyndFeedInput();
+            try {
+                return input.build(new XmlReader(response.getBody()));
+            } catch (FeedException e) {
+                throw new IOException("Could not parse response", e);
             }
-        } catch (XMLStreamException e) {
-            throw new RuntimeException(e);
+        });
+
+        RSSFeed feed = new RSSFeed(
+                syndFeed.getTitle(),
+                syndFeed.getLink(),
+                syndFeed.getDescription(),
+                syndFeed.getLanguage(),
+                syndFeed.getCopyright(),
+                syndFeed.getPublishedDate().toString(),
+                feedURLString
+        );
+        System.out.println("feed parsed");
+
+        for (SyndEntry item: syndFeed.getEntries()) {
+            RSSFeedItem rssitem;
+            if (item.getEnclosures().size() == 0) {
+                rssitem = new RSSFeedItem(item.getUri(), item.getTitle(), item.getDescription().getValue(), item.getLink(), item.getAuthor(), null, item.getPublishedDate().toString(), null, null);
+                feed.getItems().add(rssitem);
+            } else {
+                rssitem = new RSSFeedItem(item.getUri(), item.getTitle(), item.getDescription().getValue(), item.getLink(), item.getAuthor(), item.getEnclosures().get(0).getUrl(), item.getPublishedDate().toString(), null, null);
+                feed.getItems().add(rssitem);
+            }
+
         }
         return feed;
     }

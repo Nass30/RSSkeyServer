@@ -18,7 +18,7 @@ public class RssFeedItemRepository extends ARepository<RSSFeedItem> {
     }
 
     public RSSFeedItem add(RSSFeedItem model) {
-        String query = "INSERT INTO public.rssfeeditem(\"Guid\", \"Description\", \"Link\", \"Title\", \"Author\", \"RssID\") VALUES (?, ?, ?, ?, ?, ?);";
+        String query = "INSERT INTO public.rssfeeditem(\"Guid\", \"Description\", \"Link\", \"Title\", \"Author\", \"RssID\", \"Image\", \"PubDate\") VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
         RSSFeedItem DBModel = null;
         ArrayList<Long> result = null;
 
@@ -26,7 +26,7 @@ public class RssFeedItemRepository extends ARepository<RSSFeedItem> {
             Timestamp ts = new Timestamp(new Date().getTime());
 
             result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,true, "RssItemID", model.getGuid(),
-                    model.getDescription(), model.getLink(), model.getTitle(), model.getAuthor(), model.getRssID());
+                    model.getDescription(), model.getLink(), model.getTitle(), model.getAuthor(), model.getRssID(), model.getImage(), model.getPubdate());
             if (result != null && result.size() > 0) {
                 DBModel = this.findbyID(result.get(0));
             }
@@ -150,42 +150,6 @@ public class RssFeedItemRepository extends ARepository<RSSFeedItem> {
     }
 
     public RSSFeedItem update(RSSFeedItem model) {
-        RSSFeedItem updatedModel = null;
-
-        try {
-            /*Statement state = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-
-            String query = "UPDATE public.users SET \"Title\"=?, \"Link\"=?, \"Description\"=?, \"Language\"=?, \"Copyright\"=?, \"Pubdate\"=? WHERE \"RssID\"=?";
-            //On crée l'objet avec la requête en paramètre
-            PreparedStatement prepare = this.connect.prepareStatement(query);
-
-            prepare.setString(1, model.getTitle());
-            prepare.setString(2, model.getLink());
-            prepare.setString(3, model.getDescription());
-            prepare.setString(4, model.getLanguage());
-            prepare.setString(5, model.getCopyright());
-            Date date= new Date();
-
-            long time = date.getTime();
-            System.out.println("Time in Milliseconds: " + time);
-
-            Timestamp ts = new Timestamp(time);
-
-            prepare.setTimestamp(6, ts);
-            prepare.setInt(7, model.getID());
-
-            ResultSet res =  prepare.executeQuery();
-            while(res.next()){
-                updatedModel = this.findbyID(model.getID());
-            }
-
-            res.close();
-            prepare.close();
-            state.close();*/
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return updatedModel;
+        return null;
     }
 }

@@ -13,6 +13,8 @@ public class RSSFeedItem implements IModel<RSSFeedItem> {
     private String description;
     private String link;
     private String author;
+    private String image;
+    private String pubdate;
     private Long ID;
     private Long rssID;
 
@@ -26,16 +28,20 @@ public class RSSFeedItem implements IModel<RSSFeedItem> {
         this.author = null;
         this.rssID = null;
         this.ID = null;
+        this.image = null;
+        this.pubdate = null;
     }
 
-    public RSSFeedItem(String guid, String title, String description, String link, String author, Long ID, Long rssID) {
+    public RSSFeedItem(String guid, String title, String description, String link, String author, String image, String pubdate, Long ID, Long rssID) {
         this.guid = guid;
         this.title = title;
         this.description = description;
         this.link = link;
         this.author = author;
-        this.rssID = rssID;
+        this.image = image;
+        this.pubdate = pubdate;
         this.ID = ID;
+        this.rssID = rssID;
     }
 
     public String getGuid() { return guid; }
@@ -90,6 +96,22 @@ public class RSSFeedItem implements IModel<RSSFeedItem> {
                 '}';
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getPubdate() {
+        return pubdate;
+    }
+
+    public void setPubdate(String pubdate) {
+        this.pubdate = pubdate;
+    }
+
     @Override
     public boolean equals(Object obj) {
         RSSFeedItem other = (RSSFeedItem)obj;
@@ -123,11 +145,9 @@ public class RSSFeedItem implements IModel<RSSFeedItem> {
         this.setDescription( resultSet.getString( "Description" ) );
         this.setID( resultSet.getLong( "RssItemID" ));
         this.setTitle(resultSet.getString("Title"));
-        System.out.println("MAP");
-        RSSFeedItem res = new RSSFeedItem(this.guid, this.title, this.description, this.link, this.author, this.ID, this.rssID);
-        System.out.println(this);
-        System.out.println();
-
+        this.setImage(resultSet.getString("Image"));
+        this.setPubdate(resultSet.getString("PubDate"));
+        RSSFeedItem res = new RSSFeedItem(this.guid, this.title, this.description, this.link, this.author, this.image, this.pubdate, this.ID, this.rssID);
         return res;
     }
 }
