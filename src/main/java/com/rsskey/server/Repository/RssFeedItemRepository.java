@@ -107,6 +107,48 @@ public class RssFeedItemRepository extends ARepository<RSSFeedItem> {
         return newFeed;
     }
 
+    public Boolean addFavorite(Long IDUser, Long RssID) {
+        Boolean queryExecuted = true;
+        String query = "INSERT INTO public.\"FavorisFeedItem\"(\"LoginID\", \"RssItemID\") VALUES (?, ?)";
+
+        try {
+            SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false,null, IDUser , RssID);
+        } catch (Exception e) {
+            queryExecuted = false;
+            e.printStackTrace();
+        }
+        return queryExecuted;
+    }
+
+    public Boolean removeFavorite(Long IDUser, Long RssID) {
+
+        Boolean queryExecuted = true;
+        String query = "DELETE FROM public.\"FavorisFeedItem\" where \"LoginID\"=? and \"RssItemID\"=?";
+
+        try {
+            SQLHelper.executeNonQuery(this.daoFactory.getConnection(),query,false,null, IDUser , RssID);
+        } catch (Exception e) {
+            queryExecuted = false;
+            e.printStackTrace();
+        }
+        return queryExecuted;
+    }
+
+    public List<RSSFeedItem> getFavoriteFeeds(Long IDUser)
+    {
+        String queryFavFeed = "SELECT * from public.\"rssfeeditem\" as rfi , public.\"FavorisFeedItem\" as ffi WHERE rfi.\"RssItemID\" = ffi.\"RssItemID\" and ffi.\"LoginID\"=?";
+        RSSFeedItem feed = new RSSFeedItem();
+        ArrayList<RSSFeedItem> feeds = new ArrayList<>();
+
+        try {
+            feeds = (ArrayList<RSSFeedItem>)(ArrayList<?>)SQLHelper.executeQuery(this.daoFactory.getConnection(),queryFavFeed, feed, IDUser);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return feeds;
+    }
+
     public RSSFeedItem update(RSSFeedItem model) {
         RSSFeedItem updatedModel = null;
 
