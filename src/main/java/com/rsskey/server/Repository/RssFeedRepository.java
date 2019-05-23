@@ -2,18 +2,10 @@ package com.rsskey.server.Repository;
 
 import com.rsskey.server.DAO.Exception.DAOException;
 import com.rsskey.server.DAO.Exception.DAOFactory;
-import com.rsskey.server.DatabaseUtils.DbConnect;
 import com.rsskey.server.Models.*;
 import com.rsskey.server.Utils.SQLHelper;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import org.springframework.dao.support.DaoSupport;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.function.Function;
 
 public class RssFeedRepository extends ARepository<RSSFeed> {
 

@@ -145,7 +145,7 @@ public class RSSFeedController {
         RssFeedItemRepository itemsrepo = DAOFactory.getInstance().getRssFeedItemRepository();
         feed.items = itemsrepo.getRSSFeedItems(feed.getID());
         System.out.println(feed.items);
-        feed = repo.update(feed, rssFeed);
+        repo.update(feed, rssFeed);
 
         return new ResponseEntity<>(feed, HttpStatus.OK);
     }

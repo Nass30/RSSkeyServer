@@ -66,7 +66,7 @@ public class UsersController {
         String token = null;
 
         if ((user = repo.findByLoginPass(name,password)) != null) {
-            token = TokenAuth.createJWT(user.getID().toString(),user.getLogin(),user.getEmail(),80000000 );
+            token = TokenAuth.createJWT(user.getID().toString(),user.getLogin(),user.getEmail(),800000000 );
             user.setToken(token);
 
             repo.update(user);
@@ -85,7 +85,9 @@ public class UsersController {
         if (user == null) {
             return APIError.unauthorizedResponse();
         }
-        if (user.getPassword() != request.getOldpassword()) {
+        System.out.println("Password : " + user.getPassword());
+        System.out.println("Old paassword : " + request.getOldpassword());
+        if (!user.getPassword().equals(request.getOldpassword())) {
             return new ResponseEntity(new APIError(HttpStatus.UNAUTHORIZED, "Wrong old password"), HttpStatus.UNAUTHORIZED);
         }
         if (request.getNewpassword() == null) {
