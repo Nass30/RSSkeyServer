@@ -154,7 +154,7 @@ public class RSSFeedController {
     /*
      List all categories.
      */
-    @RequestMapping(value = "/categories", method = RequestMethod.GET)
+    @RequestMapping(value = "/topics", method = RequestMethod.GET)
     public ResponseEntity getCategories(@RequestHeader("token") String token) {
         User user = TokenAuth.getUserByToken(token);
         if (user == null) {
@@ -168,7 +168,7 @@ public class RSSFeedController {
     /*
      List all feeds for a category.
      */
-    @RequestMapping(value = "/categories/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/topics/{id}", method = RequestMethod.GET)
     public ResponseEntity getCategoryFeeds(@RequestHeader("token") String token, @PathVariable("id") Long id) {
         User user = TokenAuth.getUserByToken(token);
         if (user == null) {
@@ -185,9 +185,9 @@ public class RSSFeedController {
     }
 
     /*
-    Create a category.
+    Suscribe to a category.
     */
-    @RequestMapping(value = "/categories/suscribe/{idCat}/{idFeed}", method = RequestMethod.POST)
+    @RequestMapping(value = "/topics/suscribe/{idCat}/{idFeed}", method = RequestMethod.PUT)
     public ResponseEntity addFeedsCategory(@RequestHeader("token") String token, @PathVariable("idCat") Long idCat, @PathVariable("idFeed") Long idFeed) {
         User user = TokenAuth.getUserByToken(token);
         CategoryRepository repo = DAOFactory.getInstance().getCategoryRepository();
@@ -207,7 +207,7 @@ public class RSSFeedController {
     /*
      Create a category.
      */
-    @RequestMapping(value = "/categories/create", method = RequestMethod.POST)
+    @RequestMapping(value = "/topics/create", method = RequestMethod.POST)
     public ResponseEntity addCategory(@RequestHeader("token") String token, @RequestBody Category category) {
         User user = TokenAuth.getUserByToken(token);
         CategoryRepository repo = DAOFactory.getInstance().getCategoryRepository();
@@ -222,13 +222,13 @@ public class RSSFeedController {
         }
         category.setUserID(user.getID());
         category = repo.add(category);
-        return new ResponseEntity(category, HttpStatus.OK);
+        return new ResponseEntity(category, HttpStatus.CREATED);
     }
 
     /*
         Update a category.
      */
-    @RequestMapping(value = "/categories/update", method = RequestMethod.PUT)
+    @RequestMapping(value = "/topics/update", method = RequestMethod.PUT)
     public ResponseEntity updateCategory(@RequestHeader("token") String token, @RequestBody Category category) {
         User user = TokenAuth.getUserByToken(token);
         if (user == null) {
@@ -252,7 +252,7 @@ public class RSSFeedController {
     /*
      Delete a category.
      */
-    @RequestMapping(value = "/categories/delete/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/topics/delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity deleteCategory(@RequestHeader("token") String token, @PathVariable Long id) {
         User user = TokenAuth.getUserByToken(token);
         if (user == null) {
@@ -261,10 +261,11 @@ public class RSSFeedController {
         if (id == null) {
             return new ResponseEntity(new APIError(HttpStatus.BAD_REQUEST, "Missing id of the category"), HttpStatus.BAD_REQUEST);
         }
-        /*if (repo.findCategoryById(id) == null) {
+        CategoryRepository repo = DAOFactory.getInstance().getCategoryRepository();
+        if (repo.findbyID(id) == null) {
             return new ResponseEntity(new APIError(HttpStatus.FORBIDDEN, "No such Category for Id" + id), HttpStatus.FORBIDDEN);
-        }*/
-
+        }
+        repo.delete(id);
         return ResponseEntity.ok(null);
     }
 

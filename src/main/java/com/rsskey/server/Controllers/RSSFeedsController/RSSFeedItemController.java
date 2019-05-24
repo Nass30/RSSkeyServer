@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(path="/feedsItem")
+@RequestMapping(path="/articles")
 public class RSSFeedItemController {
 
     /*
