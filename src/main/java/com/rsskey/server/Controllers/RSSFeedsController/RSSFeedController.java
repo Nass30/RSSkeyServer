@@ -10,15 +10,13 @@ import com.rsskey.server.Repository.RssFeedRepository;
 import com.rsskey.server.Repository.SuscriberRssRepository;
 import com.rsskey.server.Utils.TokenAuth;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.springframework.dao.support.DaoSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.lang.Long;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping(path="/feeds")
 public class RSSFeedController {
@@ -145,7 +143,6 @@ public class RSSFeedController {
         RSSFeed rssFeed = rssFeedParser.readFeed();
         RssFeedItemRepository itemsrepo = DAOFactory.getInstance().getRssFeedItemRepository();
         feed.items = itemsrepo.getRSSFeedItems(feed.getID());
-        System.out.println(feed.items);
         repo.update(feed, rssFeed);
 
         return new ResponseEntity<>(feed, HttpStatus.OK);

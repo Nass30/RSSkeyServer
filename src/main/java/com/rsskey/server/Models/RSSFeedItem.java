@@ -93,6 +93,7 @@ public class RSSFeedItem implements IModel<RSSFeedItem> {
                 ", author='" + author + '\'' +
                 ", ID='" + ID + '\'' +
                 ", IDrss='" + rssID + '\'' +
+                ", image='" + image + '\'' +
                 '}';
     }
 

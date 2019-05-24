@@ -69,19 +69,23 @@ public class RSSFeedParser {
                 syndFeed.getLanguage(),
                 syndFeed.getCopyright(),
                 syndFeed.getPublishedDate().toString(),
-                feedURLString
+                feedURLString,
+                syndFeed.getImage().getUrl()
         );
         System.out.println("feed parsed");
 
-        for (SyndEntry item: syndFeed.getEntries()) {
+        for (SyndEntry item : syndFeed.getEntries()) {
             RSSFeedItem rssitem;
-            if (item.getEnclosures().size() == 0) {
-                rssitem = new RSSFeedItem(item.getUri(), item.getTitle(), item.getDescription().getValue(), item.getLink(), item.getAuthor(), null, item.getPublishedDate().toString(), null, null);
-                feed.getItems().add(rssitem);
-            } else {
-                rssitem = new RSSFeedItem(item.getUri(), item.getTitle(), item.getDescription().getValue(), item.getLink(), item.getAuthor(), item.getEnclosures().get(0).getUrl(), item.getPublishedDate().toString(), null, null);
-                feed.getItems().add(rssitem);
-            }
+            rssitem = new RSSFeedItem(item.getUri(),
+                    item.getTitle(),
+                    item.getDescription().getValue(),
+                    item.getLink(),
+                    item.getAuthor(),
+                    item.getEnclosures().isEmpty() ? null : item.getEnclosures().get(0).getUrl(),
+                    item.getPublishedDate().toString(),
+                    null,
+                    null);
+            feed.getItems().add(rssitem);
 
         }
         return feed;

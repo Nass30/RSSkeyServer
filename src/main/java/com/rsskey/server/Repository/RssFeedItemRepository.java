@@ -85,8 +85,6 @@ public class RssFeedItemRepository extends ARepository<RSSFeedItem> {
             System.out.println("Error :");
             e.printStackTrace();
         }
-        System.out.println("getRSSFeedItems result");
-        System.out.println(feeds);
         return feeds;
     }
 

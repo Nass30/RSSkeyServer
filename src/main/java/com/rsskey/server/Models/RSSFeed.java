@@ -15,6 +15,7 @@ public class RSSFeed implements IModel<RSSFeed>{
     private  String pubDate;
     private  String rssURL;
     private  Long ID;
+    private  String image;
 
     public  List<RSSFeedItem> items = new ArrayList<RSSFeedItem>();
 
@@ -26,6 +27,7 @@ public class RSSFeed implements IModel<RSSFeed>{
         this.copyright = clone.copyright;
         this.pubDate = clone.pubDate;
         this.ID = clone.ID;
+        this.image = clone.image;
     }
 
     public RSSFeed()
@@ -38,10 +40,11 @@ public class RSSFeed implements IModel<RSSFeed>{
         this.pubDate = null;
         this.ID = null;
         this.rssURL = null;
+        this.image = null;
 
     }
 
-    public RSSFeed(String title, String link, String description, String language, String copyright, String pubDate, String rssURL) {
+    public RSSFeed(String title, String link, String description, String language, String copyright, String pubDate, String rssURL, String image) {
         this.title = title;
         this.link = link;
         this.description = description;
@@ -49,9 +52,10 @@ public class RSSFeed implements IModel<RSSFeed>{
         this.copyright = copyright;
         this.pubDate = pubDate;
         this.rssURL = rssURL;
+        this.image = image;
     }
 
-    public RSSFeed(String title, String link, String description, String language, String copyright, String pubDate, Long ID, String rssURL) {
+    public RSSFeed(String title, String link, String description, String language, String copyright, String pubDate, Long ID, String rssURL, String image) {
         this.title = title;
         this.link = link;
         this.description = description;
@@ -60,6 +64,7 @@ public class RSSFeed implements IModel<RSSFeed>{
         this.pubDate = pubDate;
         this.ID = ID;
         this.rssURL = rssURL;
+        this.image = image;
     }
 
     public Long getID() {
@@ -95,6 +100,15 @@ public class RSSFeed implements IModel<RSSFeed>{
         this.rssURL = rssURL;
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+
     @Override
     public String toString() {
         return "RSSFlux{" +
@@ -104,6 +118,7 @@ public class RSSFeed implements IModel<RSSFeed>{
                 ", language='" + language + '\'' +
                 ", copyright='" + copyright + '\'' +
                 ", pubDate='" + pubDate + '\'' +
+                ", image='" + image + '\'' +
                 '}';
     }
 
@@ -127,7 +142,8 @@ public class RSSFeed implements IModel<RSSFeed>{
         this.setLanguage(resultSet.getString("Language"));
         this.setLink(resultSet.getString("Link"));
         this.setRssURL(resultSet.getString("rssurl"));
-        return new RSSFeed(this.title, this.link, this.description, this.language, this.copyright, this.pubDate, this.getID(), this.rssURL);
+        this.setImage(resultSet.getString("image"));
+        return new RSSFeed(this.title, this.link, this.description, this.language, this.copyright, this.pubDate, this.getID(), this.rssURL, this.image);
     }
 
     @Override

@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Null;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
-
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping(path="/users")
 public class UsersController {
@@ -70,11 +73,15 @@ public class UsersController {
             user.setToken(token);
 
             repo.update(user);
-            return new ResponseEntity(new AuthorizationToken(token),
-                    HttpStatus.OK);
+            Map result = new HashMap();
+            result.put("token", token);
+            result.put("login", user.getLogin());
+            result.put("email", user.getEmail());
+
+            return new ResponseEntity(result, HttpStatus.OK);
         }
         else {
-            return new ResponseEntity(new APIError(HttpStatus.UNAUTHORIZED, "Wrong email - password"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity(new APIError(HttpStatus.UNAUTHORIZED, "Wrong email - password"), HttpStatus.OK);
         }
     }
 

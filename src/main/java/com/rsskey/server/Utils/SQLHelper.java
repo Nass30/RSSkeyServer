@@ -103,7 +103,6 @@ public class SQLHelper {
             /* Parcours de la ligne de données de l'éventuel ResulSet retourné */
             while ( resultSet.next() ) {
                 DBModel.add(model.map(resultSet));
-                System.out.println(model.toString());
             }
         } catch ( SQLException e ) {
             throw new DAOException( e );
@@ -126,8 +125,6 @@ public class SQLHelper {
             /* Parcours de la ligne de données de l'éventuel ResulSet retourné */
             if ( resultSet.next() ) {
                 DBModel = model.map( resultSet );
-                System.out.println("TEST SQL EXECUTION !!");
-                System.out.println(model.toString());
             }
         } catch ( SQLException e ) {
             throw new DAOException( e );
