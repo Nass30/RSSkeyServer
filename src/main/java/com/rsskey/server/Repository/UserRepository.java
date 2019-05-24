@@ -129,6 +129,7 @@ public class UserRepository extends ARepository<User> {
         String query = "UPDATE public.users SET \"Login\"=?, \"Password\"=?, \"Email\"=?, \"Token\"=?  WHERE \"LoginID\"=?";
 
         try {
+            System.out.println("token :" + model.getToken());
             result = SQLHelper.executeNonQuery(this.daoFactory.getConnection(), query,false, null, model.getLogin(), model.getPassword(), model.getEmail(), model.getToken(), model.getID());
 
         } catch (Exception e) {

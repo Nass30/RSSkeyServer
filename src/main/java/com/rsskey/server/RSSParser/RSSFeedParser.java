@@ -32,6 +32,7 @@ public class RSSFeedParser {
     static final String CHANNEL = "channel";
     static final String LANGUAGE = "language";
     static final String COPYRIGHT = "copyright";
+    static final String IMAGE = "image";
     static final String LINK = "link";
     static final String AUTHOR = "author";
     static final String ITEM = "item";

@@ -59,6 +59,7 @@ public class TokenAuth {
             decodeJWT(token);
 
         } catch (Exception e) {
+                System.out.println();
                isValid = false;
         }
         return isValid;
@@ -70,7 +71,7 @@ public class TokenAuth {
         }
         UserRepository repo = DAOFactory.getInstance().getUserRepository();
         if (!TokenAuth.TokenIsValid(token)) {
-            return null;
+            //return null;
         }
         return repo.findByToken(token);
     }

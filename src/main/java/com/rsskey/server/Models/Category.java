@@ -1,16 +1,25 @@
 package com.rsskey.server.Models;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
-public class Category {
-    public String title;
-    public List<Long> feeds;
-    public Long id;
+public class Category implements IModel<Category> {
 
-    public Category(String title, List<Long> feeds, Long id) {
-        this.title = title;
-        this.feeds = feeds;
-        this.id = id;
+    public Long getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Long userID) {
+        this.userID = userID;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public Long getId() {
@@ -21,19 +30,25 @@ public class Category {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public Long userID;
+    public String category;
+    public Long id;
+
+    public Category() {
+
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public Category(String category, Long userid, Long id) {
+        this.category = category;
+        this.userID = userid;
+        this.id = id;
     }
 
-    public List<Long> getFeeds() {
-        return feeds;
-    }
-
-    public void setFeeds(List<Long> feeds) {
-        this.feeds = feeds;
+    @Override
+    public Category map(ResultSet resultSet) throws SQLException {
+        this.category = resultSet.getString("category");
+        this.userID = resultSet.getLong("userID");
+        this.id = resultSet.getLong("categoryID");
+        return this;
     }
 }

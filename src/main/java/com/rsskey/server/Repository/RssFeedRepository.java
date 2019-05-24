@@ -85,6 +85,20 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
         return feeds;
     }
 
+    public List<RSSFeed> getAllFeedByCategory(Long catId) {
+        RSSFeed feed = new RSSFeed();
+        List<RSSFeed> feeds = new ArrayList<RSSFeed>();
+        String query = "select * from public.\"rssfeed\" as rf, public.\"categorysuscriber\" as cs where rf.\"RssID\" = cs.\"rssID\" and cs.\"categoryID\"=?";
+
+        try {
+            feeds = (ArrayList<RSSFeed>)(ArrayList<?>)SQLHelper.executeQuery(this.daoFactory.getConnection(),query, feed, catId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return feeds;
+
+    }
+
     @Override
     public RSSFeed update(RSSFeed model) throws DAOException {
         return null;
@@ -94,14 +108,13 @@ public class RssFeedRepository extends ARepository<RSSFeed> {
         RSSFeed updatedModel = null;
         model.setID(oldModel.getID());
         try {
-            String query = "UPDATE public.rssfeed SET \"Title\"=?, \"Link\"=?, \"Description\"=?, \"Language\"=?, \"Copyright\"=?, \"Pubdate\"=? WHERE \"RssID\"=?";
+            String query = "UPDATE public.rssfeed SET \"Title\"=?, \"Description\"=?, \"Language\"=?, \"Copyright\"=?, \"Pubdate\"=? WHERE \"RssID\"=?";
             SQLHelper.executeNonQuery(
                     this.daoFactory.getConnection(),
                     query,
                     false,
                     null,
                     model.getTitle(),
-                    model.getLink(),
                     model.getDescription(),
                     model.getLanguage(),
                     model.getCopyright(),

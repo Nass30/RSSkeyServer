@@ -4,6 +4,7 @@ import com.rsskey.server.Controllers.APIError;
 import com.rsskey.server.DAO.Exception.DAOFactory;
 import com.rsskey.server.Models.*;
 import com.rsskey.server.RSSParser.RSSFeedParser;
+import com.rsskey.server.Repository.CategoryRepository;
 import com.rsskey.server.Repository.RssFeedItemRepository;
 import com.rsskey.server.Repository.RssFeedRepository;
 import com.rsskey.server.Repository.SuscriberRssRepository;
@@ -159,9 +160,8 @@ public class RSSFeedController {
         if (user == null) {
             return APIError.unauthorizedResponse();
         }
-        List<Category> categories = new ArrayList<Category>();
-        categories.add(new Category("Tech", new ArrayList(), new Long(32)));
-        categories.add(new Category("Food", new ArrayList(), new Long(33)));
+        CategoryRepository repo = DAOFactory.getInstance().getCategoryRepository();
+        List<Category> categories = repo.getAllCategories(user.getID());
         return new ResponseEntity(categories, HttpStatus.OK);
     }
 
@@ -174,29 +174,55 @@ public class RSSFeedController {
         if (user == null) {
             return APIError.unauthorizedResponse();
         }
-        if (id == null) {
+        CategoryRepository repo = DAOFactory.getInstance().getCategoryRepository();
+        if (repo.findbyID(id) == null) {
             return new ResponseEntity(new APIError(HttpStatus.BAD_REQUEST, "Missing id"), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity(new Category("Tech", new ArrayList(), id), HttpStatus.OK);
+        RssFeedRepository repoRss = DAOFactory.getInstance().getRssFeedRepository();
+        List<RSSFeed> list =  repoRss.getAllFeedByCategory(id);
+
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     /*
-     Add a category.
-     */
-    @RequestMapping(value = "/categories/add", method = RequestMethod.POST)
-    public ResponseEntity addCategory(@RequestHeader("token") String token, @RequestBody Category category) {
+    Create a category.
+    */
+    @RequestMapping(value = "/categories/suscribe/{idCat}/{idFeed}", method = RequestMethod.POST)
+    public ResponseEntity addFeedsCategory(@RequestHeader("token") String token, @PathVariable("idCat") Long idCat, @PathVariable("idFeed") Long idFeed) {
         User user = TokenAuth.getUserByToken(token);
+        CategoryRepository repo = DAOFactory.getInstance().getCategoryRepository();
+        RssFeedRepository repoFeed = DAOFactory.getInstance().getRssFeedRepository();
+
         if (user == null) {
             return APIError.unauthorizedResponse();
         }
-        if (category.getTitle() == null) {
+        if (repoFeed.findbyID(idFeed) == null || repo.findbyID(idCat) == null) {
+            return new ResponseEntity(new APIError(HttpStatus.BAD_REQUEST, "Feed or Category doesn't exists."), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity(repo.suscriber(idCat,idFeed), HttpStatus.OK);
+    }
+
+
+    /*
+     Create a category.
+     */
+    @RequestMapping(value = "/categories/create", method = RequestMethod.POST)
+    public ResponseEntity addCategory(@RequestHeader("token") String token, @RequestBody Category category) {
+        User user = TokenAuth.getUserByToken(token);
+        CategoryRepository repo = DAOFactory.getInstance().getCategoryRepository();
+        if (user == null) {
+            return APIError.unauthorizedResponse();
+        }
+        if (category.getCategory() == null) {
             return new ResponseEntity(new APIError(HttpStatus.BAD_REQUEST, "Missing title of the category"), HttpStatus.BAD_REQUEST);
         }
-        /*if (repo.findCategoryByTitle(category.getTitle()) != null) {
+        if (repo.findCategoryByTitle(category.getCategory(), user.getID()) != null) {
             return new ResponseEntity(new APIError(HttpStatus.FORBIDDEN, "Category Title already created"), HttpStatus.FORBIDDEN);
-        }*/
-
-        return new ResponseEntity(new Category("Tech", new ArrayList(), new Long(42)), HttpStatus.OK);
+        }
+        category.setUserID(user.getID());
+        category = repo.add(category);
+        return new ResponseEntity(category, HttpStatus.OK);
     }
 
     /*
@@ -211,14 +237,16 @@ public class RSSFeedController {
         if (category.getId()== null) {
             return new ResponseEntity(new APIError(HttpStatus.BAD_REQUEST, "Missing id of the category"), HttpStatus.BAD_REQUEST);
         }
-        if (category.getTitle() == null) {
+        if (category.getCategory() == null) {
             return new ResponseEntity(new APIError(HttpStatus.BAD_REQUEST, "Missing new title of the category"), HttpStatus.BAD_REQUEST);
         }
-        /*if (repo.findCategoryById(category.getId()) == null) {
+        CategoryRepository repo = DAOFactory.getInstance().getCategoryRepository();
+        if (repo.findbyID(category.getId()) == null) {
             return new ResponseEntity(new APIError(HttpStatus.FORBIDDEN, "No such Category for Id" + category.getId()), HttpStatus.FORBIDDEN);
-        }*/
-
-        return new ResponseEntity(new Category(category.getTitle(), new ArrayList(), category.getId()), HttpStatus.OK);
+        }
+        repo.update(category);
+        category = repo.findbyID(category.getId());
+        return new ResponseEntity(category, HttpStatus.OK);
     }
 
     /*
